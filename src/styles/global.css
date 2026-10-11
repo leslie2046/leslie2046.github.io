@@ -63,6 +63,27 @@
 @media(max-width:900px){.engineering-intro{align-items:flex-start;flex-direction:column;padding-top:45px}.feature-copy h2{font-size:32px}.feature-copy>p{font-size:20px}.article-kicker,.engineering-article-header h1{margin-left:0}.article-overview{grid-template-columns:150px minmax(0,1fr);gap:30px}[data-appearance=engineering] .article-grid{grid-template-columns:minmax(0,1fr);gap:25px}[data-appearance=engineering] .prose{grid-column:1;grid-row:2}[data-appearance=engineering] .toc{position:static;border:1px solid var(--line);padding:18px 22px}.engineering-note{gap:30px}.engineering-note p{font-size:17px}}
 @media(max-width:640px){[data-appearance=engineering] .shell{padding-inline:24px}[data-appearance=engineering] .site-header{height:83px}.engineering-intro{padding:40px 0 32px;gap:25px}.engineering-intro h1{font-size:27px;letter-spacing:-.6px}.engineering-actions a{font-size:12px;padding:9px 16px}.engineering-feature{padding:35px 0 40px}.feature-label{font-size:15px}.feature-copy h2{font-size:32px;margin:18px 0;letter-spacing:-.7px}.feature-copy>p{font-size:19px}.journal[data-layout=engineering] .section-heading h2{font-size:21px}.journal[data-layout=engineering] .post-copy{display:flex;flex-direction:column;gap:10px}.journal[data-layout=engineering] .post-copy h3{font-size:20px;order:0}.journal[data-layout=engineering] .post-meta{order:1;font-size:12px}.engineering-note{flex-direction:column;padding:32px 0 48px;gap:25px}.engineering-note h2{font-size:26px}.engineering-article-header{padding:38px 0 30px}.engineering-article-header h1{font-size:32px;letter-spacing:-.7px;margin-bottom:30px}.article-overview{grid-template-columns:minmax(0,1fr);gap:22px;padding-top:22px}.article-publication{flex-direction:row;flex-wrap:wrap;gap:10px;align-items:center}.article-publication time{font-size:13px}.article-publication span:last-child{margin:0}.article-deck>p{font-size:19px}[data-appearance=engineering] .prose{font-size:17px}[data-appearance=engineering] .prose h2{font-size:24px}[data-appearance=engineering] .prose h3{font-size:20px}}
 .post-card.no-cover .post-copy{max-width:760px}
+.profile-page{padding-top:65px;padding-bottom:70px}
+.profile-header{display:flex;justify-content:space-between;align-items:center;gap:60px;padding-bottom:55px;border-bottom:3px solid var(--fg)}
+.profile-header h1{font-size:49px;line-height:1.4;font-weight:700;letter-spacing:-1.5px;margin:20px 0}
+.profile-lead{font-family:Georgia,"Songti SC",SimSun,serif;font-size:26px;line-height:1.7;margin:0 0 24px}
+.profile-location{font-size:13px;color:var(--muted)}
+.profile-avatar{width:180px;height:180px;object-fit:cover;border-radius:50%;flex-shrink:0}
+.profile-section{display:grid;grid-template-columns:220px minmax(0,760px);gap:65px;padding:44px 0;border-bottom:1px solid var(--line)}
+.profile-section h2{font-size:20px;font-weight:600;line-height:1.7;margin:0}
+.profile-copy{font-family:Georgia,"Songti SC",SimSun,serif;font-size:18px;line-height:1.95;min-width:0}
+.profile-copy>p{margin:0 0 18px}.profile-copy>p:last-child{margin-bottom:0}
+.profile-copy a{text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--line)}
+.profile-copy a:hover{color:var(--accent);text-decoration-color:var(--accent)}
+.profile-projects{list-style:none;padding:0;margin:0 0 25px}
+.profile-projects li+li{margin-top:25px}.profile-projects a{font-family:var(--font-sans);font-size:17px;font-weight:600}.profile-projects p{color:var(--muted);margin:6px 0 0;font-size:17px}
+.profile-more{font-family:var(--font-sans);font-size:14px}
+.profile-contact{border-bottom:0}
+.profile-socials{list-style:none;padding:0;margin:25px 0 0;font-family:var(--font-sans);font-size:15px}
+.profile-socials a{display:flex;justify-content:space-between;gap:20px;padding:14px 0;border-top:1px solid var(--line);text-decoration:none}
+.profile-socials a span:first-child{font-weight:600}
+@media(max-width:900px){.profile-section{grid-template-columns:150px minmax(0,1fr);gap:30px}.profile-header h1{font-size:40px}.profile-avatar{width:150px;height:150px}.profile-lead{font-size:23px}}
+@media(max-width:640px){.profile-page{padding-top:35px;padding-bottom:40px}.profile-header{flex-direction:column-reverse;align-items:flex-start;gap:25px;padding-bottom:35px}.profile-avatar{width:110px;height:110px}.profile-header h1{font-size:32px;letter-spacing:-.5px;margin:15px 0}.profile-lead{font-size:21px}.profile-section{grid-template-columns:minmax(0,1fr);gap:20px;padding:30px 0}.profile-copy{font-size:17px}.profile-socials{font-size:13px}}
 .life-empty{position:relative;padding:76px 0 100px;min-height:310px}
 .life-empty h2{font-family:Georgia,"Songti SC",SimSun,serif;font-size:27px;font-weight:400;margin:20px 0 15px}
 .life-empty p{font-size:14px;color:var(--muted);line-height:2}

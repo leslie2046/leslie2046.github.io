@@ -1,17 +1,17 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { formatDate, readingTime } from '../lib/posts';
-interface Props { posts: CollectionEntry<'posts'>[]; heading?: string; layout?: 'journal' | 'engineering'; }
-const { posts, heading = '最新文章', layout = 'journal' } = Astro.props;
+interface Props { posts: CollectionEntry<'posts'>[]; heading?: string; layout?: 'journal' | 'engineering'; itemLabel?: string; }
+const { posts, heading = '最新文章', layout = 'journal', itemLabel = '文章' } = Astro.props;
 const categories = [...new Set(posts.map(p => p.data.category))];
 ---
-    <section class="journal" data-layout={layout} aria-labelledby="journal-title">
+    <section class="journal" data-layout={layout} data-item-label={itemLabel} aria-labelledby="journal-title">
       <div class="section-heading flex flex-wrap justify-between items-center gap-6">
         <h2 id="journal-title">{heading} <span>{String(posts.length).padStart(2, '0')}</span></h2>
-        <label class="search-box"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="搜索文章、标签…" aria-label="搜索文章" /></label>
+        <label class="search-box"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder={`搜索${itemLabel}、标签…`} aria-label={`搜索${itemLabel}`} /></label>
       </div>
-      <div class="filters flex flex-wrap gap-2" role="group" aria-label="文章分类">
-        <button class="filter active" data-category="all" aria-pressed="true">全部文章</button>
+      <div class="filters flex flex-wrap gap-2" role="group" aria-label={`${itemLabel}分类`}>
+        <button class="filter active" data-category="all" aria-pressed="true">全部{itemLabel}</button>
         {categories.map(category => <button class="filter" data-category={category} aria-pressed="false">{category}</button>)}
       </div>
       <div id="post-list">
@@ -26,7 +26,7 @@ const categories = [...new Set(posts.map(p => p.data.category))];
           {post.data.cover && <a class="post-cover" href={`/posts/${post.id}/`} tabindex="-1" aria-hidden="true"><img src={post.data.cover} alt="" width="1536" height="1024" loading={index === 0 ? 'eager' : 'lazy'} /></a>}
         </article>)}
       </div>
-      <p id="empty-state" class="empty-state" hidden>没有找到匹配的文章，试试其他关键词。</p>
+      <p id="empty-state" class="empty-state" hidden>没有找到匹配的{itemLabel}，试试其他关键词。</p>
       <p id="result-count" class="sr-only" aria-live="polite"></p>
       <div class="journal-end"><span></span><p>持续记录，慢慢积累。</p><span></span></div>
     </section>
@@ -46,7 +46,8 @@ const categories = [...new Set(posts.map(p => p.data.category))];
       const empty = document.querySelector<HTMLElement>('#empty-state');
       if (empty) empty.hidden = count > 0;
       const results = document.querySelector('#result-count');
-      if (results) results.textContent = `找到 ${count} 篇文章`;
+      const itemLabel = document.querySelector<HTMLElement>('.journal')?.dataset.itemLabel || '文章';
+      if (results) results.textContent = `找到 ${count} 篇${itemLabel}`;
     }
     search?.addEventListener('input', filterPosts);
     filters.forEach(button => button.addEventListener('click', () => {

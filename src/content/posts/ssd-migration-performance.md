@@ -4,6 +4,7 @@ description: '一次 HDD 到 SSD 的数据卷迁移测试：RAGFlow 检索平均
 date: 2026-10-11
 tags: [Dify, RAGFlow, SSD, 知识库, 性能测试]
 category: 性能测试
+kind: report
 references: /references/ssd-migration-sources/
 download: /downloads/ssd-migration-performance.md
 ---

@@ -3,7 +3,9 @@ import Base from '../layouts/Base.astro';
 import { getPosts, formatDate } from '../lib/posts';
 import PostList from '../components/PostList.astro';
 const posts = (await getPosts()).filter(post => post.data.section === 'tech');
-const featured = posts[0];
+const articles = posts.filter(post => post.data.kind === 'article');
+const reports = posts.filter(post => post.data.kind === 'report');
+const featured = articles[0];
 ---
 <Base appearance="engineering">
   <div id="top" class="shell engineering-home">
@@ -14,7 +16,12 @@ const featured = posts[0];
     {featured && <section class="engineering-feature" aria-label="精选文章">
       <div class="feature-copy"><span class="feature-label">精选文章 <span> / {formatDate(featured.data.date)}</span></span><h2><a href={`/posts/${featured.id}/`}>{featured.data.title}</a></h2><p>{featured.data.description}</p><a class="feature-read" href={`/posts/${featured.id}/`}>阅读文章 <span>↗</span></a></div>
     </section>}
-    <PostList posts={posts} heading="工程文章" layout="engineering" />
+    <PostList posts={articles} heading="工程文章" layout="engineering" />
+    {reports.length > 0 && <section class="reports-module" aria-labelledby="reports-title">
+      <div class="reports-heading"><h2 id="reports-title">技术报告 <span>{String(reports.length).padStart(2, '0')}</span></h2><a href="/reports/">查看全部报告 ↗</a></div>
+      <p>性能测试、部署对比与数据分析。保留测试条件、关键结果和结论边界。</p>
+      <div class="report-rows">{reports.slice(0, 3).map(report => <article><h3><a href={`/posts/${report.id}/`}>{report.data.title}</a></h3><time datetime={report.data.date.toISOString()}>{formatDate(report.data.date)}</time></article>)}</div>
+    </section>}
     <aside class="engineering-note"><h2>在实践中思考，<br />在记录中成长。</h2><div><p>关于 AI 应用、开源贡献和软件工程。<br />记录问题，也记录解决问题的过程。</p><a href="/about/">关于 Leslie ↗</a></div></aside>
   </div>
 

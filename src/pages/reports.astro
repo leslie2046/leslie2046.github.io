@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import PostList from '../components/PostList.astro';
+import { getPosts } from '../lib/posts';
+const reports = (await getPosts()).filter(post => post.data.section === 'tech' && post.data.kind === 'report');
+---
+<Base title="技术报告 · Leslie" description="性能测试、部署对比与数据分析，记录测试条件、关键结果和结论边界。" appearance="engineering">
+  <div id="top" class="shell reports-page">
+    <a class="back-link" href="/">← 技术</a>
+    <header class="reports-intro"><span class="eyebrow">TECHNICAL REPORTS</span><h1>技术报告</h1><p>用数据记录实际表现，<br />把测试条件与结果一起留下。</p></header>
+    <PostList posts={reports} heading="全部报告" layout="engineering" itemLabel="报告" />
+  </div>
+</Base>

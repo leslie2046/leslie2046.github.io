@@ -9,9 +9,9 @@ const toc = headings.filter(h => h.depth === 2 || h.depth === 3);
 ---
 <Base title={`${post.data.title} · Leslie`} description={post.data.description} image={post.data.cover} appearance={post.data.section === 'tech' ? 'engineering' : 'journal'}>
   <div id="top" class="shell article-shell">
-    <a class="back-link" href={post.data.section === 'life' ? '/life/' : '/'}>{post.data.section === 'life' ? '← 生活片段' : '← 所有文章'}</a>
+    <a class="back-link" href={post.data.section === 'life' ? '/life/' : post.data.kind === 'report' ? '/reports/' : '/'}>{post.data.section === 'life' ? '← 生活片段' : post.data.kind === 'report' ? '← 技术报告' : '← 所有文章'}</a>
     {post.data.section === 'tech' ? <header class="engineering-article-header">
-      <div class="article-kicker">{post.data.category}</div>
+      <div class="article-kicker">{post.data.kind === 'report' && '技术报告 · '}{post.data.category}</div>
       <h1>{post.data.title}</h1>
       <div class="article-overview">
         <div class="article-publication"><span>发布于</span><time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time><span>Leslie · {readingTime(post.body)} 分钟阅读</span></div>

@@ -1,0 +1,38 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { getPosts, formatDate, readingTime } from '../../lib/posts';
+export async function getStaticPaths() { return (await getPosts()).map(post => ({ params: { id: post.id }, props: { post } })); }
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const toc = headings.filter(h => h.depth === 2 || h.depth === 3);
+---
+<Base title={`${post.data.title} · Leslie`} description={post.data.description} image={post.data.cover}>
+  <div id="top" class="shell article-shell">
+    <a class="back-link" href="/">← 所有文章</a>
+    <header class="article-header"><div class="post-meta"><span class="accent">{post.data.category}</span><span> / </span><time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time><span>· {readingTime(post.body)} 分钟阅读</span></div><h1>{post.data.title}</h1><p>{post.data.description}</p><div class="tags flex gap-4">{post.data.tags.map(tag => <span>#{tag}</span>)}</div></header>
+    <div class="article-grid">
+      <article class="prose"><Content /><div class="article-source"><strong>文章来源</strong><p>本文导入自 Leslie 的 engineering-notes，保留原文及其测试边界。</p><a href={post.data.source}>在 GitHub 查看原文 ↗</a><span> · </span><a href="/references/dify-sources/">事实核对记录 ↗</a><p><a href="/downloads/dify-retrieval-performance.md" download>下载 Markdown 原文 ↓</a></p></div></article>
+      <aside class="toc"><details open><summary>文章目录</summary><nav aria-label="文章目录"><ol>{toc.map(h => <li class:list={{sub: h.depth === 3}}><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol></nav></details></aside>
+    </div>
+  </div>
+  <script>
+    document.querySelectorAll<HTMLPreElement>('.prose pre').forEach(pre => {
+      const code = pre.querySelector('code');
+      if (!code) return;
+      const button = document.createElement('button');
+      button.textContent = '复制'; button.className = 'copy-button'; button.setAttribute('aria-label', '复制代码');
+      button.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(code.textContent || ''); button.textContent = '已复制'; }
+        catch { button.textContent = '复制失败'; }
+        window.setTimeout(() => button.textContent = '复制', 2000);
+      });
+      pre.append(button);
+    });
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc a')];
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => { if (entry.isIntersecting) links.forEach(link => link.classList.toggle('current', decodeURIComponent(link.hash.slice(1)) === entry.target.id)); });
+    }, { rootMargin: '-10% 0px -70% 0px' });
+    document.querySelectorAll('.prose h2, .prose h3').forEach(heading => observer.observe(heading));
+  </script>
+</Base>

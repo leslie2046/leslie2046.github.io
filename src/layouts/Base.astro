@@ -1,0 +1,61 @@
+---
+import '../styles/global.css';
+interface Props { title?: string; description?: string; image?: string; }
+const { title = 'Leslie · 技术与思考', description = '记录工程实践，分享技术思考。关于 AI、开源与软件工程的个人笔记。', image = '/images/dify-cover.png' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const path = Astro.url.pathname;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title="Leslie 的技术笔记" href="/rss.xml" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content={path.startsWith('/posts/') ? 'article' : 'website'} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline>
+      try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch {}
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到正文</a>
+    <header class="site-header shell flex items-center justify-between">
+      <a class="brand" href="/" aria-label="Leslie 首页">Leslie<span> / journal</span><i></i></a>
+      <nav class="flex items-center gap-7" aria-label="主导航">
+        <a href="/" aria-current={path === '/' ? 'page' : undefined}>文章</a>
+        <a href="/about/" aria-current={path === '/about/' ? 'page' : undefined}>关于</a>
+        <a class="external-nav" href="https://github.com/leslie2046">GitHub ↗</a>
+        <button id="theme-toggle" class="icon-button" aria-label="切换到深色模式" title="切换明暗主题"><span class="sun">☼</span><span class="moon">☾</span></button>
+      </nav>
+    </header>
+    <main id="main"><slot /></main>
+    <footer class="shell site-footer flex flex-wrap items-center justify-between gap-4">
+      <span>© {new Date().getFullYear()} Leslie <span class="footer-note">· 在实践中思考，在记录中成长。</span></span>
+      <div class="flex gap-6"><a href="/rss.xml">RSS ↗</a><a href="https://github.com/leslie2046/leslie2046.github.io">源码 ↗</a><a href="#top">回到顶部 ↑</a></div>
+    </footer>
+    <script>
+      const button = document.querySelector<HTMLButtonElement>('#theme-toggle');
+      function updateThemeLabel() {
+        const dark = document.documentElement.dataset.theme === 'dark';
+        button?.setAttribute('aria-label', dark ? '切换到浅色模式' : '切换到深色模式');
+        button?.setAttribute('title', dark ? '切换到浅色模式' : '切换到深色模式');
+      }
+      updateThemeLabel();
+      button?.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        try { localStorage.setItem('theme', next); } catch {}
+        updateThemeLabel();
+      });
+    </script>
+  </body>
+</html>

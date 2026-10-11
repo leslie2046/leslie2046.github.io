@@ -51,7 +51,9 @@ def base(title, subtitle, height=5.8):
 
 
 def save(fig, name, description):
-    fig.savefig(ASSETS / f"{name}.svg", metadata={"Date": None, "Title": description})
+    svg_path = ASSETS / f"{name}.svg"
+    fig.savefig(svg_path, metadata={"Date": None, "Title": description})
+    svg_path.write_text("\n".join(line.rstrip() for line in svg_path.read_text(encoding="utf-8").splitlines()) + "\n", encoding="utf-8")
     fig.savefig(PREVIEWS / f"{name}.png", dpi=160)
     plt.close(fig)
     print(name)

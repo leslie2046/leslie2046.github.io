@@ -9,10 +9,9 @@ const featured = posts[0];
   <div id="top" class="shell engineering-home">
     <section class="engineering-intro">
       <h1>Leslie 的工程笔记：<br />把系统构建得更可靠。</h1>
-      <div class="engineering-actions"><a href="https://github.com/leslie2046">GitHub ↗</a><a href="/rss.xml">订阅文章 ↗</a></div>
+      <div class="engineering-actions"><a href="https://github.com/leslie2046">GitHub ↗</a></div>
     </section>
     {featured && <section class="engineering-feature" aria-label="精选文章">
-      <a class="feature-art" href={`/posts/${featured.id}/`} tabindex="-1" aria-hidden="true"><img src="/images/engineering-lines.svg" alt="" width="480" height="540" /></a>
       <div class="feature-copy"><span class="feature-label">精选文章 <span> / {formatDate(featured.data.date)}</span></span><h2><a href={`/posts/${featured.id}/`}>{featured.data.title}</a></h2><p>{featured.data.description}</p><a class="feature-read" href={`/posts/${featured.id}/`}>阅读文章 <span>↗</span></a></div>
     </section>}
     <PostList posts={posts} heading="工程文章" layout="engineering" />

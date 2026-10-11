@@ -5,7 +5,6 @@ import PostList from '../components/PostList.astro';
 const posts = (await getPosts()).filter(post => post.data.section === 'tech');
 const articles = posts.filter(post => post.data.kind === 'article');
 const reports = posts.filter(post => post.data.kind === 'report');
-const featured = articles[0];
 ---
 <Base appearance="engineering">
   <div id="top" class="shell engineering-home">
@@ -13,9 +12,6 @@ const featured = articles[0];
       <h1>Leslie 的工程笔记：<br />把系统构建得更可靠。</h1>
       <div class="engineering-actions"><a href="https://github.com/leslie2046">GitHub ↗</a></div>
     </section>
-    {featured && <section class="engineering-feature" aria-label="精选文章">
-      <div class="feature-copy"><span class="feature-label">精选文章 <span> / {formatDate(featured.data.date)}</span></span><h2><a href={`/posts/${featured.id}/`}>{featured.data.title}</a></h2><p>{featured.data.description}</p><a class="feature-read" href={`/posts/${featured.id}/`}>阅读文章 <span>↗</span></a></div>
-    </section>}
     <PostList posts={articles} heading="工程文章" layout="engineering" />
     {reports.length > 0 && <section class="reports-module" aria-labelledby="reports-title">
       <div class="reports-heading"><h2 id="reports-title">技术报告 <span>{String(reports.length).padStart(2, '0')}</span></h2><a href="/reports/">查看全部报告 ↗</a></div>

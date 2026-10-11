@@ -1,11 +1,11 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { formatDate, readingTime } from '../lib/posts';
-interface Props { posts: CollectionEntry<'posts'>[]; heading?: string; }
-const { posts, heading = '最新文章' } = Astro.props;
+interface Props { posts: CollectionEntry<'posts'>[]; heading?: string; layout?: 'journal' | 'engineering'; }
+const { posts, heading = '最新文章', layout = 'journal' } = Astro.props;
 const categories = [...new Set(posts.map(p => p.data.category))];
 ---
-    <section class="journal" aria-labelledby="journal-title">
+    <section class="journal" data-layout={layout} aria-labelledby="journal-title">
       <div class="section-heading flex flex-wrap justify-between items-center gap-6">
         <h2 id="journal-title">{heading} <span>{String(posts.length).padStart(2, '0')}</span></h2>
         <label class="search-box"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="搜索文章、标签…" aria-label="搜索文章" /></label>

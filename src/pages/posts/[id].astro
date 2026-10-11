@@ -7,10 +7,17 @@ const { post } = Astro.props;
 const { Content, headings } = await render(post);
 const toc = headings.filter(h => h.depth === 2 || h.depth === 3);
 ---
-<Base title={`${post.data.title} · Leslie`} description={post.data.description} image={post.data.cover}>
+<Base title={`${post.data.title} · Leslie`} description={post.data.description} image={post.data.cover} appearance={post.data.section === 'tech' ? 'engineering' : 'journal'}>
   <div id="top" class="shell article-shell">
     <a class="back-link" href={post.data.section === 'life' ? '/life/' : '/'}>{post.data.section === 'life' ? '← 生活片段' : '← 所有文章'}</a>
-    <header class="article-header"><div class="post-meta"><span class="accent">{post.data.category}</span><span> / </span><time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time><span>· {readingTime(post.body)} 分钟阅读</span></div><h1>{post.data.title}</h1><p>{post.data.description}</p><div class="tags flex gap-4">{post.data.tags.map(tag => <span>#{tag}</span>)}</div></header>
+    {post.data.section === 'tech' ? <header class="engineering-article-header">
+      <div class="article-kicker">{post.data.category}</div>
+      <h1>{post.data.title}</h1>
+      <div class="article-overview">
+        <div class="article-publication"><span>发布于</span><time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time><span>Leslie · {readingTime(post.body)} 分钟阅读</span></div>
+        <div class="article-deck"><p>{post.data.description}</p><div class="tags flex flex-wrap gap-4">{post.data.tags.map(tag => <span>#{tag}</span>)}</div></div>
+      </div>
+    </header> : <header class="article-header"><div class="post-meta"><span class="accent">{post.data.category}</span><span> / </span><time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time><span>· {readingTime(post.body)} 分钟阅读</span></div><h1>{post.data.title}</h1><p>{post.data.description}</p><div class="tags flex gap-4">{post.data.tags.map(tag => <span>#{tag}</span>)}</div></header>}
     <div class="article-grid">
       <article class="prose"><Content />{(post.data.source || post.data.references || post.data.download) && <div class="article-source"><strong>相关资料</strong><p>{post.data.source && <a href={post.data.source}>相关资料 ↗</a>}{post.data.references && <>{post.data.source && <span> · </span>}<a href={post.data.references}>事实核对记录 ↗</a></>}</p>{post.data.download && <p><a href={post.data.download} download>下载本文 Markdown ↓</a></p>}</div>}</article>
       <aside class="toc"><details open><summary>文章目录</summary><nav aria-label="文章目录"><ol>{toc.map(h => <li class:list={{sub: h.depth === 3}}><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol></nav></details></aside>

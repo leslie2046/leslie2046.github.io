@@ -6,6 +6,8 @@ tags: [Dify, RAG, 性能优化, 开源]
 category: 工程实践
 cover: /images/dify-cover.png
 source: https://github.com/langgenius/dify/pull/42673
+references: /references/dify-sources/
+download: /downloads/dify-retrieval-performance.md
 ---
 ![Dify 知识检索性能优化封面，标注 P95 延迟下降 73.7% 及测试范围](/images/dify-cover.png)
 

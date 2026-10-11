@@ -3,5 +3,5 @@ import Base from './Base.astro';
 const { frontmatter } = Astro.props;
 ---
 <Base title={`${frontmatter.title} · Leslie`}>
-  <section id="top" class="shell about-page"><a class="back-link" href="/posts/dify-retrieval-performance/">← 返回文章</a><h1>{frontmatter.title}</h1><article class="prose"><slot /></article></section>
+  <section id="top" class="shell about-page"><a class="back-link" href={frontmatter.article || '/posts/dify-retrieval-performance/'}>← 返回文章</a><h1>{frontmatter.title}</h1><article class="prose"><slot /></article></section>
 </Base>

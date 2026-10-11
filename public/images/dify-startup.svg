@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Dify Chatflow 启动优化</title><desc id="desc">减少启动阶段的重复解析，PR 报告的一组环境样本中 workflow_started 平均耗时下降 41.3%。</desc>
+  <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e4dbd0" stroke-width="1"/></pattern></defs>
+  <rect width="1200" height="800" fill="#eee8df"/><rect width="1200" height="800" fill="url(#grid)" opacity=".6"/>
+  <circle cx="1130" cy="40" r="240" fill="#d5c5ae" opacity=".2"/>
+  <g font-family="Segoe UI,Microsoft YaHei,sans-serif">
+    <text x="72" y="99" font-size="20" letter-spacing="4" fill="#866e5a">ENGINEERING / DIFY #36773</text>
+    <text x="72" y="208" font-size="64" font-weight="600" fill="#302c27">让工作流更快开始</text>
+    <text x="75" y="265" font-size="26" fill="#807568">复用元数据 · 复用运行时 · 正确失效</text>
+    <g transform="translate(72 330)">
+      <rect width="1056" height="196" rx="12" fill="#faf7f1" stroke="#d4c8b9"/>
+      <path d="M230 98H400M654 98H824" stroke="#b85c39" stroke-width="3"/>
+      <path d="m388 90 12 8-12 8m424-16 12 8-12 8" fill="none" stroke="#b85c39" stroke-width="3"/>
+      <g fill="#302c27" font-size="24" text-anchor="middle"><text x="132" y="89">REQUEST</text><text x="527" y="89">PROVIDER</text><text x="922" y="89">RUNTIME</text></g>
+      <g fill="#8b7e70" font-size="20" text-anchor="middle"><text x="132" y="128">请求内复用</text><text x="527" y="128">Schema / Model</text><text x="922" y="128">绑定已有对象</text></g>
+    </g>
+    <text x="73" y="659" font-size="90" fill="#b85c39" font-weight="600">↓ 41.3%</text>
+    <text x="570" y="619" font-size="22" fill="#685d51">workflow_started · 平均耗时</text>
+    <text x="570" y="664" font-size="32" fill="#302c27">322.6 ms → 189.3 ms</text>
+    <text x="74" y="741" font-size="18" fill="#807568">PR 报告的环境样本，非端到端响应时间；流程为概念示意。</text>
+  </g>
+</svg>

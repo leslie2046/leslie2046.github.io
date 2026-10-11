@@ -12,7 +12,7 @@ const toc = headings.filter(h => h.depth === 2 || h.depth === 3);
     <a class="back-link" href="/">← 所有文章</a>
     <header class="article-header"><div class="post-meta"><span class="accent">{post.data.category}</span><span> / </span><time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time><span>· {readingTime(post.body)} 分钟阅读</span></div><h1>{post.data.title}</h1><p>{post.data.description}</p><div class="tags flex gap-4">{post.data.tags.map(tag => <span>#{tag}</span>)}</div></header>
     <div class="article-grid">
-      <article class="prose"><Content /><div class="article-source"><strong>相关资料</strong><p><a href={post.data.source}>Dify 优化 PR ↗</a><span> · </span><a href="/references/dify-sources/">事实核对记录 ↗</a></p><p><a href="/downloads/dify-retrieval-performance.md" download>下载本文 Markdown ↓</a></p></div></article>
+      <article class="prose"><Content /><div class="article-source"><strong>相关资料</strong><p><a href={post.data.source}>相关 PR ↗</a>{post.data.references && <><span> · </span><a href={post.data.references}>事实核对记录 ↗</a></>}</p>{post.data.download && <p><a href={post.data.download} download>下载本文 Markdown ↓</a></p>}</div></article>
       <aside class="toc"><details open><summary>文章目录</summary><nav aria-label="文章目录"><ol>{toc.map(h => <li class:list={{sub: h.depth === 3}}><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol></nav></details></aside>
     </div>
   </div>

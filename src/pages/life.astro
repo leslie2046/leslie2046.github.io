@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import PostList from '../components/PostList.astro';
+import { getPosts } from '../lib/posts';
+const posts = (await getPosts()).filter(post => post.data.section === 'life');
+---
+<Base title="生活 · Leslie" description="记录日常里的片刻、见闻与心情。那些代码之外，值得留下的小事。" image="/favicon.svg">
+  <div id="top" class="shell life-page">
+    <section class="hero">
+      <div class="eyebrow"><span class="small-dot"></span> LESLIE'S EVERYDAY JOURNAL</div>
+      <h1>日常，片刻，<br /><span>和生活的小事。</span></h1>
+      <div class="hero-bottom"><p>不必每一件事都有答案。<br />记下沿途的风景，也记下当时的心情。</p></div>
+    </section>
+    {posts.length > 0 ? <PostList posts={posts} heading="生活片段" /> : <section class="life-empty" aria-labelledby="life-empty-title">
+      <span class="eyebrow">A SPACE FOR SMALL MOMENTS</span>
+      <h2 id="life-empty-title">留一点空白，给接下来的生活。</h2>
+      <p>这里还没有写下第一篇。<br />那些平凡而值得记住的片段，会慢慢出现在这里。</p>
+      <span class="life-mark" aria-hidden="true">✳</span>
+    </section>}
+  </div>
+</Base>

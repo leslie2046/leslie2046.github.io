@@ -7,3 +7,11 @@
 @media(max-width:900px){.post-card{gap:28px;grid-template-columns:minmax(0,1fr) 260px}.article-grid{grid-template-columns:minmax(0,1fr)}.toc{position:static;grid-row:1;padding:16px 20px;border:1px solid var(--line);border-radius:6px}.toc ol{columns:2}.article-header h1{font-size:32px}}
 @media(max-width:640px){.shell{padding-inline:24px}.site-header{height:83px}.brand{font-size:25px}.brand span{display:none}.site-header nav{gap:19px}.site-header nav a{font-size:12px}.external-nav{display:none}.hero{padding:48px 0 38px}.eyebrow{font-size:9px;letter-spacing:1.7px}.hero h1{font-size:43px;letter-spacing:-1px;margin-block:24px}.hero-bottom{gap:20px}.hero-bottom p{font-size:13px}.hero-bottom .text-link{font-size:12px}.journal{padding-top:30px}.section-heading{gap:15px}.section-heading h2{font-size:17px}.search-box input{width:150px;font-size:12px}.filters{margin-top:20px}.post-card{grid-template-columns:minmax(0,1fr);gap:22px;padding:25px 0 30px}.post-cover{grid-row:1}.post-copy h3{font-size:22px}.post-meta{font-size:10px;gap:7px}.post-copy>p{font-size:13px}.journal-end{margin-bottom:35px}.about-strip{padding:24px;margin-bottom:35px}.about-strip p{max-width:230px}.round-link{width:36px;height:36px}.site-footer{font-size:10px}.footer-note{display:none}.article-header{padding-top:30px}.article-header h1{font-size:27px}.article-header>p{font-size:14px}.prose{font-size:15px;line-height:1.95}.prose h2{font-size:22px}.toc ol{columns:1}.about-page{padding-block:48px}.about-page h1{font-size:35px}.about-intro{font-size:19px}.about-strip h2{font-size:22px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+
+.post-card.no-cover{grid-template-columns:minmax(0,1fr)}
+.post-card.no-cover .post-copy{max-width:760px}
+.life-empty{position:relative;padding:76px 0 100px;min-height:310px}
+.life-empty h2{font-family:Georgia,"Songti SC",SimSun,serif;font-size:27px;font-weight:400;margin:20px 0 15px}
+.life-empty p{font-size:14px;color:var(--muted);line-height:2}
+.life-mark{position:absolute;right:45px;top:110px;font-size:64px;color:var(--accent);opacity:.6}
+@media(max-width:640px){.life-empty{padding:48px 0 70px}.life-empty h2{font-size:22px;max-width:270px}.life-empty p{font-size:13px;max-width:265px}.life-mark{position:static;display:block;font-size:32px;margin-top:24px}}

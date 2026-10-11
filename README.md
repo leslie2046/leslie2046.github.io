@@ -57,3 +57,24 @@ draft: false
 - 主题和响应式样式：src/styles/global.css
 
 正文仅使用受信任的仓库内容。构建不依赖运行时 API、外部字体或外部图床。
+
+## 生活片段
+
+导航“技术”展示技术文章，“生活”展示 section: life 的文章。未指定 section 时默认归入技术版块。
+
+在 src/content/posts/ 添加 Markdown，例如：
+
+```yaml
+---
+title: '周末的一段散步'
+description: '记下路上的一点小事。'
+date: 2026-10-11
+section: life
+category: 日常
+tags: [生活]
+---
+
+在这里写正文。
+```
+
+生活文章无需 source、封面或核对资料。发布后自动进入生活列表、RSS 和站点地图。用 draft: true 暂存草稿。

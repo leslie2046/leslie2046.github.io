@@ -31,7 +31,8 @@ const path = Astro.url.pathname;
     <header class="site-header shell flex items-center justify-between">
       <a class="brand" href="/" aria-label="Leslie 首页">Leslie<span> / journal</span><i></i></a>
       <nav class="flex items-center gap-7" aria-label="主导航">
-        <a href="/" aria-current={path === '/' ? 'page' : undefined}>文章</a>
+        <a href="/" aria-current={path === '/' ? 'page' : undefined}>技术</a>
+        <a href="/life/" aria-current={path === '/life/' ? 'page' : undefined}>生活</a>
         <a href="/about/" aria-current={path === '/about/' ? 'page' : undefined}>关于</a>
         <a class="external-nav" href="https://github.com/leslie2046">GitHub ↗</a>
         <button id="theme-toggle" class="icon-button" aria-label="切换到深色模式" title="切换明暗主题"><span class="sun">☼</span><span class="moon">☾</span></button>

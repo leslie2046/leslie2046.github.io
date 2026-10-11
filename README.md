@@ -84,3 +84,8 @@ tags: [生活]
 ```
 
 生活文章无需 source、封面或核对资料。发布后自动进入生活列表、RSS 和站点地图。用 draft: true 暂存草稿。
+
+## 项目板块
+
+一级导航“项目”指向 /projects/，采用响应式宫格展示项目简介与 GitHub 仓库链接。
+在 src/data/projects.ts 中添加、编辑或调整项目顺序即可更新卡片。介绍依据公开 README 编写，不在构建或浏览时调用 GitHub API。

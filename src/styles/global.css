@@ -101,3 +101,22 @@
 .life-empty p{font-size:14px;color:var(--muted);line-height:2}
 .life-mark{position:absolute;right:45px;top:110px;font-size:64px;color:var(--accent);opacity:.6}
 @media(max-width:640px){.life-empty{padding:48px 0 70px}.life-empty h2{font-size:22px;max-width:270px}.life-empty p{font-size:13px;max-width:265px}.life-mark{position:static;display:block;font-size:32px;margin-top:24px}}
+
+.projects-page{padding-top:36px;padding-bottom:75px}
+.projects-intro{padding:45px 0 30px;border-bottom:3px solid var(--fg)}
+.projects-intro h1{font-size:49px;font-weight:700;line-height:1.4;letter-spacing:-1px;margin:20px 0}
+.projects-intro>p{font-family:Georgia,"Songti SC",SimSun,serif;font-size:25px;line-height:1.7;margin:0}
+.projects-overview{display:flex;justify-content:space-between;gap:20px;align-items:baseline;margin-top:34px;font-size:13px}
+.projects-overview>span{color:var(--muted)}.projects-overview>a:hover{color:var(--accent)}
+.project-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;padding-top:32px}
+.project-tile{display:flex;flex-direction:column;min-width:0;padding:28px;background:var(--bg);border:1px solid var(--line);transition:border-color .2s,background-color .2s}
+.project-tile:hover{border-color:var(--fg);background:var(--card)}
+.project-category{font-size:12px;color:var(--muted)}
+.project-tile h2{font-size:24px;font-weight:600;letter-spacing:-.5px;line-height:1.4;margin:20px 0 8px}
+.project-repo{font-family:Consolas,"SFMono-Regular",monospace;font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.project-tile>p{font-family:Georgia,"Songti SC",SimSun,serif;font-size:17px;line-height:1.85;margin:22px 0 28px}
+.project-tile-footer{display:flex;justify-content:space-between;gap:16px;align-items:baseline;margin-top:auto;padding-top:18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+.project-destination{flex-shrink:0;color:var(--fg);font-size:12px}.project-destination>span{margin-left:6px}
+@media(max-width:1050px){.project-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.projects-page{padding-top:20px;padding-bottom:45px}.projects-intro{padding:25px 0}.projects-intro h1{font-size:34px}.projects-intro>p{font-size:21px}.project-grid{grid-template-columns:minmax(0,1fr);gap:16px;padding-top:24px}.project-tile{padding:24px}.project-tile h2{font-size:23px}.project-tile>p{margin:18px 0 24px}.projects-overview{font-size:12px;margin-top:26px}}
+@media(max-width:480px){.site-header nav{gap:14px}.icon-button{width:32px;height:32px}.brand{font-size:24px}}

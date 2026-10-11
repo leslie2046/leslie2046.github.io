@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import { projects } from '../data/projects';
+---
+<Base title="项目 · Leslie" description="我维护的开源项目：Dify 插件、知识库与对象存储工具、AI 服务性能测试，以及交互式推理指标解释器。" appearance="engineering">
+  <div id="top" class="shell projects-page">
+    <header class="projects-intro">
+      <span class="eyebrow">PROJECTS / OPEN SOURCE</span>
+      <h1>项目</h1>
+      <p>从实际问题出发，<br />把想法做成可以使用的工具。</p>
+      <div class="projects-overview"><span>{String(projects.length).padStart(2, '0')} 个项目</span><a href="https://github.com/leslie2046?tab=repositories">全部 GitHub 仓库 ↗</a></div>
+    </header>
+    <section class="project-grid" aria-label="开源项目">
+      {projects.map(project => (
+        <a class="project-tile" href={`https://github.com/leslie2046/${project.repo}`} aria-labelledby={`project-${project.repo}`}>
+          <span class="project-category">{project.category}</span>
+          <h2 id={`project-${project.repo}`}>{project.name}</h2>
+          <span class="project-repo">{project.repo}</span>
+          <p>{project.description}</p>
+          <div class="project-tile-footer"><span>{project.technology}</span><span class="project-destination">查看仓库 <span aria-hidden="true">↗</span></span></div>
+        </a>
+      ))}
+    </section>
+  </div>
+</Base>

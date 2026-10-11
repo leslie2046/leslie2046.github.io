@@ -34,7 +34,7 @@ date: 2026-10-11
 tags: [AI, 工程]
 category: 工程实践
 cover: /images/cover.png
-source: https://github.com/leslie2046/engineering-notes
+source: https://github.com/langgenius/dify/pull/42673
 draft: false
 ---
 ```
@@ -49,7 +49,7 @@ draft: false
 
 ## 内容来源
 
-首篇来自 https://github.com/leslie2046/engineering-notes ，固定于提交 f8280286c25074a9ae09dd1430181e9f24f0a3b0，写作日期 2026-10-09。保留正文、封面、性能数据、测试边界及事实核对记录，不自动同步。
+首篇记录 Dify 知识检索性能优化实践，相关贡献为 Dify PR #42673，写作日期 2026-10-09。保留正文、封面、性能数据、测试边界及事实核对记录。
 
 - 文章：src/content/posts/dify-retrieval-performance.md
 - 核对资料：src/pages/references/dify-sources.md

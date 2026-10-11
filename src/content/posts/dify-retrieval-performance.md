@@ -5,7 +5,7 @@ date: 2026-10-09
 tags: [Dify, RAG, 性能优化, 开源]
 category: 工程实践
 cover: /images/dify-cover.png
-source: https://github.com/leslie2046/engineering-notes/blob/f8280286c25074a9ae09dd1430181e9f24f0a3b0/articles/dify-retrieval-performance/README.md
+source: https://github.com/langgenius/dify/pull/42673
 ---
 ![Dify 知识检索性能优化封面，标注 P95 延迟下降 73.7% 及测试范围](/images/dify-cover.png)
 
@@ -147,4 +147,3 @@ PR 增加了以下回归覆盖：相同供应商数据的复用、数据变化�
 - [作者 GitHub](https://github.com/leslie2046)
 
 我会继续在这里记录 Dify 插件、RAG 和推理服务的工程实践。如果你在自己的环境中做了验证，欢迎分享部署条件和结果。
-

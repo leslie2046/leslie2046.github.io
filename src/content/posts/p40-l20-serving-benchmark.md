@@ -38,6 +38,10 @@ L20 上两组部署使用同一台硬件，更适合观察部署方式的差异�
 
 ## Embedding 吞吐随并发增加
 
+[![Embedding 吞吐随并发变化的折线图，对比 P40 加 Xinference、L20 加 Xinference 和 L20 加 vLLM](/images/reports/gpu-embedding-qps.svg)](/images/reports/gpu-embedding-qps.svg)
+
+横轴按实际并发数间隔绘制，纵轴从零开始。标记对应各档观测值，连线用于辨认变化方向；每档仅 100 次请求、单轮测试。点击图表可放大查看。
+
 | 并发 | P40 + Xinference QPS | L20 + Xinference QPS | L20 + vLLM QPS | L20 同档 QPS 比值 |
 | --- | ---: | ---: | ---: | ---: |
 | 1 | 12.13 | 43.30 | <mark class="metric-best" title="同一并发档位最高 QPS">200.81</mark> | 4.64 倍 |
@@ -54,6 +58,10 @@ P40 + Xinference 则在并发 20 达到本轮峰值 57.39 QPS，升至 30 后降
 
 ### L20 上的 Embedding 延迟
 
+[![L20 上 Embedding 的 P95 延迟折线图，对比 Xinference 与 vLLM](/images/reports/gpu-embedding-p95.svg)](/images/reports/gpu-embedding-p95.svg)
+
+延迟独立绘图，避免与 QPS 共用坐标轴。这里重点展示 P95；P50 的精确值保留在下表。P40 的延迟档位不完整，因此不绘制其延迟曲线。
+
 | 并发 | Xinference P50 | vLLM P50 | Xinference P95 | vLLM P95 |
 | --- | ---: | ---: | ---: | ---: |
 | 1 | 19.64 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">4.79 ms</mark> | 20.27 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">5.10 ms</mark> |
@@ -66,6 +74,10 @@ P40 + Xinference 则在并发 20 达到本轮峰值 57.39 QPS，升至 30 后降
 
 ## Reranker 在并发 20 附近出现吞吐平台
 
+[![Reranker 吞吐随并发变化的折线图，L20 加 vLLM 在并发 20 至 30 的吞吐接近](/images/reports/gpu-reranker-qps.svg)](/images/reports/gpu-reranker-qps.svg)
+
+并发 20 与 30 的 vLLM 观测点接近水平，能直观看到本轮吞吐平台；单轮连线不代表这些档位之间已经经过连续测试。
+
 | 并发 | P40 + Xinference QPS | L20 + Xinference QPS | L20 + vLLM QPS | L20 同档 QPS 比值 |
 | --- | ---: | ---: | ---: | ---: |
 | 1 | 8.22 | 34.18 | <mark class="metric-best" title="同一并发档位最高 QPS">70.88</mark> | 2.07 倍 |
@@ -77,6 +89,10 @@ P40 + Xinference 则在并发 20 达到本轮峰值 57.39 QPS，升至 30 后降
 Reranker 的曲线与 Embedding 不同。L20 + vLLM 在并发 20 时达到 310.71 QPS，并发 30 时为 308.64 QPS，相差约 **0.7%**。这两个档位的吞吐已经很接近。
 
 ### L20 上的 Reranker 延迟
+
+[![L20 上 Reranker 的 P95 延迟折线图，Xinference 在并发 20 出现高值，vLLM 延迟随并发上升](/images/reports/gpu-reranker-p95.svg)](/images/reports/gpu-reranker-p95.svg)
+
+与吞吐图一起看，并发 20 升至 30 时，vLLM 吞吐几乎不变，P95 仍继续上升。Xinference 在并发 20 的 500.70 ms 高值也按原数据保留，是否稳定出现需要复测。
 
 | 并发 | Xinference P50 | vLLM P50 | Xinference P95 | vLLM P95 |
 | --- | ---: | ---: | ---: | ---: |

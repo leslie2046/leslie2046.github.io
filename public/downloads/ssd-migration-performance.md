@@ -31,6 +31,10 @@ download: /downloads/ssd-migration-performance.md
 
 绿色高亮标注同一指标在 HDD 与 SSD 两组中的最低耗时，降幅和减少时间列不参与比较。下面沿用报告汇总表中的指标，单位均为毫秒。耗时降幅按 `(迁移前 − 迁移后) / 迁移前` 计算。
 
+[![SSD 迁移前后检索耗时的成对横向柱状图，比较 RAGFlow 和 Dify 的平均值、中位数及较慢请求指标](/images/reports/ssd-retrieval.svg)](/images/reports/ssd-retrieval.svg)
+
+柱长从零开始，越短表示耗时越低；绿色柱旁标出迁移后的耗时与降幅。各指标沿用下表的汇总值，每组 10 次调用。点击图表可放大查看。
+
 | 场景与指标 | HDD | SSD | 耗时降幅 |
 | --- | ---: | ---: | ---: |
 | RAGFlow 平均值 | 996.92 | <mark class="metric-best" title="该指标迁移前后最低耗时">825.91</mark> | 17.15% |
@@ -50,6 +54,10 @@ Dify 的平均耗时减少约 **170 毫秒**，但中位数只下降 4.47%。更
 ## Agent 的收益不只出现在启动阶段
 
 检索是应用路径中的一部分，Agent 调用更接近完整的交互过程。报告分别记录了工作流启动、首字响应（TTFT）和请求总耗时。
+
+[![SSD 迁移前后 Agent 工作流启动、首字响应及请求总耗时的成对横向柱状图](/images/reports/ssd-agent.svg)](/images/reports/ssd-agent.svg)
+
+三项指标使用同一毫秒坐标轴，便于比较绝对等待时间；它们描述不同的计时范围，不能叠加为总耗时。
 
 | Agent 平均指标 | HDD | SSD | 减少时间 | 耗时降幅 |
 | --- | ---: | ---: | ---: | ---: |

@@ -1,0 +1,12 @@
+model,hotword_setting,t1h_character_accuracy_percent,s5h_character_accuracy_percent
+njueaiv2,unspecified,85.8,95.1
+SenseVoiceSmall,unspecified,90.8,95.3
+seaco-paraformer-zh,unspecified,91.1,95.9
+paraformer-zh-hotword,no_additional_hotwords_reported,91.1,95.8
+paraformer-zh-hotword,3_hotwords,91.3,96.8
+whisper-large-v3,unspecified,78.6,87.2
+Fun-ASR-Nano-2512,unspecified,89.7,96.9
+Fun-ASR-MLT-Nano-2512,unspecified,82.4,63.4
+xunfei,unspecified,87.8,96.5
+Qwen3-ASR-1.7B,unspecified,92.3,96.5
+Qwen3-ASR-0.6B,unspecified,91.7,95.9

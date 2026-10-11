@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Xinference Supervisor 重启后的状态恢复</title><desc id="desc">清除旧引用、重新发现 Supervisor、上报存活副本并重建管理状态的概念示意。</desc>
+  <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#dbe2dc" stroke-width="1"/></pattern></defs>
+  <rect width="1200" height="800" fill="#edf0e9"/><rect width="1200" height="800" fill="url(#grid)" opacity=".65"/>
+  <g font-family="Segoe UI,Microsoft YaHei,sans-serif">
+    <text x="72" y="99" font-size="20" letter-spacing="4" fill="#607363">XINFERENCE / #4731 + #5250</text>
+    <text x="72" y="203" font-size="60" font-weight="600" fill="#293b30">Supervisor 重启之后</text>
+    <text x="75" y="262" font-size="28" fill="#6c7c6d">让存活的模型，重新被系统看见。</text>
+    <g transform="translate(72 330)">
+      <rect width="1056" height="206" rx="12" fill="#f9faf5" stroke="#c9d3c7"/>
+      <path d="M235 104H398M652 104H818" stroke="#687f61" stroke-width="3"/>
+      <path d="m386 96 12 8-12 8m418-16 12 8-12 8" stroke="#687f61" stroke-width="3" fill="none"/>
+      <g font-size="25" fill="#293b30" text-anchor="middle"><text x="132" y="91">RECONNECT</text><text x="526" y="91">REPLAY</text><text x="918" y="91">REBUILD</text></g>
+      <g font-size="21" fill="#6c7c6d" text-anchor="middle"><text x="132" y="132">清理旧引用 · 发现新地址</text><text x="526" y="132">上报存活副本</text><text x="918" y="132">恢复路由与管理状态</text></g>
+    </g>
+    <text x="74" y="637" font-size="33" fill="#293b30">连接恢复，才是状态恢复的起点。</text>
+    <text x="74" y="692" font-size="23" fill="#6c7c6d">控制平面恢复实践 · 不等于所有模型或请求无中断恢复</text>
+    <text x="74" y="750" font-size="18" fill="#6c7c6d">概念示意，具体支持范围与验证边界见正文。</text>
+  </g>
+</svg>

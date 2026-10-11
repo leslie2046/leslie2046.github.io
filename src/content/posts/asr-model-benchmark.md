@@ -32,7 +32,7 @@ CPU 行是单独的部署记录；其他延迟行使用 P40。字正确率表未
 
 ## 短音频延迟对比
 
-表头的 1s 至 7s 指输入音频时长，表内数值均为秒。
+表头的 1s 至 7s 指输入音频时长，表内数值均为秒。绿色高亮标注各音频时长下 P40 组与 CPU 组各自的最低值，并列最低一并标注。
 
 | 模型 | 硬件 | 1s 音频 | 3s 音频 | 5s 音频 | 7s 音频 |
 | --- | --- | ---: | ---: | ---: | ---: |
@@ -41,10 +41,10 @@ CPU 行是单独的部署记录；其他延迟行使用 P40。字正确率表未
 | paraformer-zh-hotword | CPU | 0.57 | 0.66 | 0.77 | 0.88 |
 | seaco-paraformer-zh | P40 | 0.22 | 0.26 | 0.34 | 0.37 |
 | seaco-paraformer-zh | CPU | 0.31 | 0.42 | 0.56 | 0.73 |
-| paraformer-zh | P40 | 0.17 | 0.21 | 0.24 | 0.27 |
-| paraformer-zh | CPU | 0.24 | 0.35 | 0.43 | 0.54 |
-| SenseVoiceSmall | P40 | 0.19 | 0.23 | 0.24 | 0.26 |
-| SenseVoiceSmall | CPU | 0.25 | 0.35 | 0.47 | 0.56 |
+| paraformer-zh | P40 | <mark class="metric-best" title="P40 组最低延迟">0.17</mark> | <mark class="metric-best" title="P40 组最低延迟">0.21</mark> | <mark class="metric-best" title="P40 组最低延迟">0.24</mark> | 0.27 |
+| paraformer-zh | CPU | <mark class="metric-best" title="CPU 组最低延迟">0.24</mark> | <mark class="metric-best" title="CPU 组最低延迟">0.35</mark> | <mark class="metric-best" title="CPU 组最低延迟">0.43</mark> | <mark class="metric-best" title="CPU 组最低延迟">0.54</mark> |
+| SenseVoiceSmall | P40 | 0.19 | 0.23 | <mark class="metric-best" title="P40 组最低延迟">0.24</mark> | <mark class="metric-best" title="P40 组最低延迟">0.26</mark> |
+| SenseVoiceSmall | CPU | 0.25 | <mark class="metric-best" title="CPU 组最低延迟">0.35</mark> | 0.47 | 0.56 |
 | whisper-large-v3 | P40 | 0.77 | 0.75 | 0.88 | 1.65 |
 | Fun-ASR-Nano-2512 | P40 | 0.50 | 0.52 | 1.03 | 1.32 |
 | Fun-ASR-MLT-Nano-2512 | P40 | 0.40 | 0.49 | 0.96 | 0.91 |
@@ -65,7 +65,7 @@ GPU 并非在每个记录点都更低。例如热词版 Paraformer 的 1 秒音�
 
 ## 两套业务测试集的字正确率
 
-所有数值统一为百分比。Qwen3-ASR-0.6B 原表中的 91.7、95.9 按同列百分比口径展示。普通 `paraformer-zh` 没有对应的字正确率数据，不使用热词版结果代替。
+绿色高亮标注每个测试集的最高字正确率。所有数值统一为百分比。Qwen3-ASR-0.6B 原表中的 91.7、95.9 按同列百分比口径展示。普通 `paraformer-zh` 没有对应的字正确率数据，不使用热词版结果代替。
 
 | 模型或配置 | T1H 机器人集 | S5H 客服集 |
 | --- | ---: | ---: |
@@ -75,10 +75,10 @@ GPU 并非在每个记录点都更低。例如热词版 Paraformer 的 1 秒音�
 | paraformer-zh-hotword | 91.1% | 95.8% |
 | paraformer-zh-hotword，加 3 个热词 | 91.3% | 96.8% |
 | whisper-large-v3 | 78.6% | 87.2% |
-| Fun-ASR-Nano-2512 | 89.7% | 96.9% |
+| Fun-ASR-Nano-2512 | 89.7% | <mark class="metric-best" title="该测试集最高字正确率">96.9%</mark> |
 | Fun-ASR-MLT-Nano-2512 | 82.4% | 63.4% |
 | xunfei | 87.8% | 96.5% |
-| Qwen3-ASR-1.7B | 92.3% | 96.5% |
+| Qwen3-ASR-1.7B | <mark class="metric-best" title="该测试集最高字正确率">92.3%</mark> | 96.5% |
 | Qwen3-ASR-0.6B | 91.7% | 95.9% |
 
 机器人集上，Qwen3-ASR-1.7B 比 njueaiv2 高 **6.5 个百分点**，Qwen3-ASR-0.6B 高 **5.9 个百分点**。客服集上，Fun-ASR-Nano-2512 比 njueaiv2 高 **1.8 个百分点**。百分点差值描述的是当前测试集上的结果变化，不是相对提升百分比。

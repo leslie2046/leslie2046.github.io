@@ -34,15 +34,17 @@ QPS 表示报告中的每秒请求吞吐；P50 和 P95 分别描述延迟分布�
 
 L20 上两组部署使用同一台硬件，更适合观察部署方式的差异。不过，报告没有记录 Xinference 的实际推理后端、精度、worker 数量与版本，不能把全部差异归因到框架本身。P40 与 L20 的网络路径也不同，其对比反映的是完整服务栈表现。
 
+结果表按同一并发档位横向比较：绿色高亮为最高 QPS，或同一延迟指标的最低值。P50 与 P95 分别比较，比值列不参与最佳值判定。
+
 ## Embedding 吞吐随并发增加
 
 | 并发 | P40 + Xinference QPS | L20 + Xinference QPS | L20 + vLLM QPS | L20 同档 QPS 比值 |
 | --- | ---: | ---: | ---: | ---: |
-| 1 | 12.13 | 43.30 | 200.81 | 4.64 倍 |
-| 5 | 40.91 | 143.62 | 554.01 | 3.86 倍 |
-| 10 | 45.77 | 189.56 | 818.70 | 4.32 倍 |
-| 20 | 57.39 | 243.51 | 1000.88 | 4.11 倍 |
-| 30 | 48.72 | 257.23 | 1197.76 | 4.66 倍 |
+| 1 | 12.13 | 43.30 | <mark class="metric-best" title="同一并发档位最高 QPS">200.81</mark> | 4.64 倍 |
+| 5 | 40.91 | 143.62 | <mark class="metric-best" title="同一并发档位最高 QPS">554.01</mark> | 3.86 倍 |
+| 10 | 45.77 | 189.56 | <mark class="metric-best" title="同一并发档位最高 QPS">818.70</mark> | 4.32 倍 |
+| 20 | 57.39 | 243.51 | <mark class="metric-best" title="同一并发档位最高 QPS">1000.88</mark> | 4.11 倍 |
+| 30 | 48.72 | 257.23 | <mark class="metric-best" title="同一并发档位最高 QPS">1197.76</mark> | 4.66 倍 |
 
 表中的同档比值使用 `L20 vLLM QPS / L20 Xinference QPS` 计算。五档结果在 3.86 至 4.66 倍之间。
 
@@ -54,11 +56,11 @@ P40 + Xinference 则在并发 20 达到本轮峰值 57.39 QPS，升至 30 后降
 
 | 并发 | Xinference P50 | vLLM P50 | Xinference P95 | vLLM P95 |
 | --- | ---: | ---: | ---: | ---: |
-| 1 | 19.64 ms | 4.79 ms | 20.27 ms | 5.10 ms |
-| 5 | 34.30 ms | 8.60 ms | 38.56 ms | 11.97 ms |
-| 10 | 51.44 ms | 11.56 ms | 58.46 ms | 18.09 ms |
-| 20 | 79.21 ms | 16.23 ms | 88.76 ms | 26.63 ms |
-| 30 | 109.52 ms | 20.44 ms | 126.10 ms | 23.55 ms |
+| 1 | 19.64 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">4.79 ms</mark> | 20.27 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">5.10 ms</mark> |
+| 5 | 34.30 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">8.60 ms</mark> | 38.56 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">11.97 ms</mark> |
+| 10 | 51.44 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">11.56 ms</mark> | 58.46 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">18.09 ms</mark> |
+| 20 | 79.21 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">16.23 ms</mark> | 88.76 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">26.63 ms</mark> |
+| 30 | 109.52 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">20.44 ms</mark> | 126.10 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">23.55 ms</mark> |
 
 在这批结果中，L20 + vLLM 在五档并发下同时获得更高 QPS 和更低 P50、P95。并发 30 的 P95 为 23.55 ms，反而低于并发 20 的 26.63 ms。这样的非单调变化需要更长测试来判断，不能据此认为继续提高并发会降低尾延迟。
 
@@ -66,11 +68,11 @@ P40 + Xinference 则在并发 20 达到本轮峰值 57.39 QPS，升至 30 后降
 
 | 并发 | P40 + Xinference QPS | L20 + Xinference QPS | L20 + vLLM QPS | L20 同档 QPS 比值 |
 | --- | ---: | ---: | ---: | ---: |
-| 1 | 8.22 | 34.18 | 70.88 | 2.07 倍 |
-| 5 | 23.51 | 105.80 | 217.81 | 2.06 倍 |
-| 10 | 37.14 | 119.69 | 286.93 | 2.40 倍 |
-| 20 | 27.57 | 89.84 | 310.71 | 3.46 倍 |
-| 30 | 30.27 | 135.96 | 308.64 | 2.27 倍 |
+| 1 | 8.22 | 34.18 | <mark class="metric-best" title="同一并发档位最高 QPS">70.88</mark> | 2.07 倍 |
+| 5 | 23.51 | 105.80 | <mark class="metric-best" title="同一并发档位最高 QPS">217.81</mark> | 2.06 倍 |
+| 10 | 37.14 | 119.69 | <mark class="metric-best" title="同一并发档位最高 QPS">286.93</mark> | 2.40 倍 |
+| 20 | 27.57 | 89.84 | <mark class="metric-best" title="同一并发档位最高 QPS">310.71</mark> | 3.46 倍 |
+| 30 | 30.27 | 135.96 | <mark class="metric-best" title="同一并发档位最高 QPS">308.64</mark> | 2.27 倍 |
 
 Reranker 的曲线与 Embedding 不同。L20 + vLLM 在并发 20 时达到 310.71 QPS，并发 30 时为 308.64 QPS，相差约 **0.7%**。这两个档位的吞吐已经很接近。
 
@@ -78,11 +80,11 @@ Reranker 的曲线与 Embedding 不同。L20 + vLLM 在并发 20 时达到 310.7
 
 | 并发 | Xinference P50 | vLLM P50 | Xinference P95 | vLLM P95 |
 | --- | ---: | ---: | ---: | ---: |
-| 1 | 25.13 ms | 14.59 ms | 25.85 ms | 14.93 ms |
-| 5 | 53.81 ms | 20.96 ms | 56.04 ms | 30.42 ms |
-| 10 | 77.88 ms | 33.33 ms | 120.34 ms | 44.38 ms |
-| 20 | 146.42 ms | 59.92 ms | 500.70 ms | 78.61 ms |
-| 30 | 224.58 ms | 89.53 ms | 248.22 ms | 128.65 ms |
+| 1 | 25.13 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">14.59 ms</mark> | 25.85 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">14.93 ms</mark> |
+| 5 | 53.81 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">20.96 ms</mark> | 56.04 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">30.42 ms</mark> |
+| 10 | 77.88 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">33.33 ms</mark> | 120.34 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">44.38 ms</mark> |
+| 20 | 146.42 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">59.92 ms</mark> | 500.70 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">78.61 ms</mark> |
+| 30 | 224.58 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">89.53 ms</mark> | 248.22 ms | <mark class="metric-best" title="同一并发档位该延迟指标最低值">128.65 ms</mark> |
 
 并发从 20 增至 30 时，L20 + vLLM 的吞吐几乎没有增长，P95 却从 78.61 ms 增至 128.65 ms，增加约 **63.7%**。在这一轮样本中，继续增加并发的代价主要体现在延迟上。
 

@@ -1,0 +1,80 @@
+---
+import '../styles/header-controls.css';
+---
+<div class="header-controls">
+  <div class="language-dropdown">
+    <button id="language-toggle" class="language-toggle" type="button" aria-label="选择界面语言" aria-haspopup="menu" aria-expanded="false" aria-controls="language-menu">
+      <svg class="language-icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17A15.64 15.64 0 0 1 9 11.35 15.65 15.65 0 0 1 6.69 8h-2a17.58 17.58 0 0 0 2.98 4.56L2.58 17.58 4 19l5-5 3.11 3.11.76-2.04ZM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12Zm-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+      <span id="language-label">中文（中国）</span>
+      <svg class="language-caret" viewBox="0 0 10 6" width="10" height="6" aria-hidden="true"><path fill="currentColor" d="m0 0 5 6 5-6Z"/></svg>
+    </button>
+    <ul id="language-menu" class="language-menu" role="menu" aria-label="界面语言" hidden>
+      <li role="none"><button type="button" role="menuitemradio" aria-checked="false" data-language="en" lang="en">English</button></li>
+      <li role="none"><button type="button" role="menuitemradio" aria-checked="true" data-language="zh-CN" lang="zh-CN">中文（中国）</button></li>
+    </ul>
+  </div>
+  <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换到深色模式" title="切换到深色模式">
+    <svg class="theme-sun" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 1v2m0 18v2M1 12h2m18 0h2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42m0-15.56-1.42 1.42M5.64 18.36l-1.42 1.42"/></svg>
+    <svg class="theme-moon" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.95 13A9 9 0 0 1 11 3.05 9 9 0 1 0 20.95 13Z"/></svg>
+  </button>
+</div>
+<script>
+  const themeButton = document.querySelector<HTMLButtonElement>('#theme-toggle');
+  const toggle = document.querySelector<HTMLButtonElement>('#language-toggle');
+  const menu = document.querySelector<HTMLUListElement>('#language-menu');
+  const label = document.querySelector<HTMLElement>('#language-label');
+  const options = [...document.querySelectorAll<HTMLButtonElement>('[data-language]')];
+  let language: 'zh-CN' | 'en' = 'zh-CN';
+  try { if (localStorage.getItem('ui-language') === 'en') language = 'en'; } catch {}
+  function updateThemeLabel() {
+    const dark = document.documentElement.dataset.theme === 'dark';
+    const text = language === 'en' ? (dark ? 'Switch to light mode' : 'Switch to dark mode') : (dark ? '切换到浅色模式' : '切换到深色模式');
+    themeButton?.setAttribute('aria-label', text);
+    themeButton?.setAttribute('title', text);
+  }
+  function setLanguage(next: 'zh-CN' | 'en') {
+    language = next;
+    if (label) label.textContent = next === 'en' ? 'English' : '中文（中国）';
+    toggle?.setAttribute('aria-label', next === 'en' ? 'Choose interface language' : '选择界面语言');
+    document.querySelectorAll<HTMLElement>('[data-ui-en][data-ui-zh]').forEach(element => {
+      element.textContent = (next === 'en' ? element.dataset.uiEn : element.dataset.uiZh) || '';
+      element.lang = next;
+    });
+    options.forEach(option => option.setAttribute('aria-checked', String(option.dataset.language === next)));
+    updateThemeLabel();
+  }
+  function setOpen(open: boolean, focus = false) {
+    if (!menu || !toggle) return;
+    menu.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    if (open && focus) (options.find(option => option.dataset.language === language) || options[0])?.focus();
+  }
+  setLanguage(language);
+  themeButton?.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch {}
+    updateThemeLabel();
+  });
+  toggle?.addEventListener('click', () => setOpen(Boolean(menu?.hidden)));
+  toggle?.addEventListener('keydown', event => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') { event.preventDefault(); setOpen(true, true); }
+  });
+  options.forEach(option => option.addEventListener('click', () => {
+    const next = option.dataset.language === 'en' ? 'en' : 'zh-CN';
+    setLanguage(next);
+    try { localStorage.setItem('ui-language', next); } catch {}
+    setOpen(false); toggle?.focus();
+  }));
+  menu?.addEventListener('keydown', event => {
+    const index = options.indexOf(document.activeElement as HTMLButtonElement);
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault(); options[(index + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length]?.focus();
+    } else if (event.key === 'Home' || event.key === 'End') {
+      event.preventDefault(); options[event.key === 'Home' ? 0 : options.length - 1]?.focus();
+    }
+  });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && menu && !menu.hidden) { setOpen(false); toggle?.focus(); } });
+  document.addEventListener('click', event => { if (!(event.target instanceof Node) || !toggle?.parentElement?.contains(event.target)) setOpen(false); });
+  document.addEventListener('focusin', event => { if (event.target instanceof Node && !toggle?.parentElement?.contains(event.target)) setOpen(false); });
+</script>

@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import HeaderControls from '../components/HeaderControls.astro';
 interface Props { title?: string; description?: string; image?: string; appearance?: 'journal' | 'engineering'; }
 const { title = 'Leslie · 技术与思考', description = '记录工程实践，分享技术思考。关于 AI、开源与软件工程的个人笔记。', image = '/images/dify-cover.png', appearance = 'journal' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -31,12 +32,12 @@ const path = Astro.url.pathname;
     <header class="site-header shell flex items-center justify-between">
       <a class="brand" href="/" aria-label="Leslie 首页">Leslie<span> / journal</span><i></i></a>
       <nav class="flex items-center gap-7" aria-label="主导航">
-        <a href="/" aria-current={path === '/' || path === '/reports/' ? 'page' : undefined}>技术</a>
-        <a href="/projects/" aria-current={path === '/projects/' ? 'page' : undefined}>项目</a>
-        <a href="/life/" aria-current={path === '/life/' ? 'page' : undefined}>生活</a>
-        <a href="/about/" aria-current={path === '/about/' ? 'page' : undefined}>关于</a>
+        <a href="/" data-ui-zh="技术" data-ui-en="Technology" aria-current={path === '/' || path === '/reports/' ? 'page' : undefined}>技术</a>
+        <a href="/projects/" data-ui-zh="项目" data-ui-en="Projects" aria-current={path === '/projects/' ? 'page' : undefined}>项目</a>
+        <a href="/life/" data-ui-zh="生活" data-ui-en="Life" aria-current={path === '/life/' ? 'page' : undefined}>生活</a>
+        <a href="/about/" data-ui-zh="关于" data-ui-en="About" aria-current={path === '/about/' ? 'page' : undefined}>关于</a>
         <a class="external-nav" href="https://github.com/leslie2046">GitHub ↗</a>
-        <button id="theme-toggle" class="icon-button" aria-label="切换到深色模式" title="切换明暗主题"><span class="sun">☼</span><span class="moon">☾</span></button>
+        <HeaderControls />
       </nav>
     </header>
     <main id="main"><slot /></main>
@@ -44,20 +45,5 @@ const path = Astro.url.pathname;
       <span>© {new Date().getFullYear()} Leslie <span class="footer-note">· 在实践中思考，在记录中成长。</span></span>
       <div class="flex gap-6"><a href="/rss.xml">RSS ↗</a><a href="https://github.com/leslie2046/leslie2046.github.io">源码 ↗</a><a href="#top">回到顶部 ↑</a></div>
     </footer>
-    <script>
-      const button = document.querySelector<HTMLButtonElement>('#theme-toggle');
-      function updateThemeLabel() {
-        const dark = document.documentElement.dataset.theme === 'dark';
-        button?.setAttribute('aria-label', dark ? '切换到浅色模式' : '切换到深色模式');
-        button?.setAttribute('title', dark ? '切换到浅色模式' : '切换到深色模式');
-      }
-      updateThemeLabel();
-      button?.addEventListener('click', () => {
-        const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-        document.documentElement.dataset.theme = next;
-        try { localStorage.setItem('theme', next); } catch {}
-        updateThemeLabel();
-      });
-    </script>
   </body>
 </html>

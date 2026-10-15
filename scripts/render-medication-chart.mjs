@@ -1,65 +1,160 @@
 import fs from 'node:fs';
 import { createHash } from 'node:crypto';
-const rows=JSON.parse(fs.readFileSync('public/data/medication-observations.json','utf8'));
-const symptoms=JSON.parse(fs.readFileSync('public/data/medication-symptoms.json','utf8'));
-for(const s of symptoms){if(!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(s.date))throw Error('Invalid symptom date');for(const key of ['dizziness','headache'])if(!['有','无','未记录'].includes(s[key]))throw Error('Invalid symptom status');}
-const fields=['systolic','diastolic','heartRate'];
-for(const r of rows){if(!Number.isFinite(Date.parse(r.time))||!r.time.endsWith('+08:00'))throw Error('Expected a recorded timestamp with +08:00 timezone');for(const key of fields)if(r[key]!=null&&(!Number.isFinite(r[key])||r[key]<=0))throw Error(`Invalid ${key}`);}
-rows.sort((a,b)=>Date.parse(a.time)-Date.parse(b.time));
-if(!rows.length)throw Error('No observations');
-if(new Set(rows.map(r=>Date.parse(r.time))).size!==rows.length)throw Error('Duplicate measurement timestamp');
-const escape=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const values=rows.flatMap(r=>fields.map(k=>r[k]).filter(v=>v!=null));
-const lo=Math.max(0,Math.floor((Math.min(...values)-15)/20)*20),hi=Math.ceil((Math.max(...values)+15)/20)*20;
-const first=Date.parse(rows[0].time),last=Date.parse(rows.at(-1).time),span=Math.max(last-first,3600000);
-const x=t=>100+(Date.parse(t)-first)/span*700,y=v=>385-(v-lo)/(hi-lo)*245;
-const label=time=>time.slice(5,10).replace('-','/')+' '+time.slice(11,16);
-const series=[{key:'systolic',name:'收缩压',unit:'mmHg',color:'#a64e36',offset:-15,dash:''},{key:'diastolic',name:'舒张压',unit:'mmHg',color:'#52716c',offset:24,dash:'7 4'},{key:'heartRate',name:'心率',unit:'次/分',color:'#79603f',offset:-12,dash:'2 5'}];
-const dates=[...new Set([...rows.map(r=>r.time.slice(0,10)),...symptoms.map(s=>s.date)])].sort();
-const dayMs=86400000,calendarStart=Date.parse(dates[0]+'T00:00:00Z');
-const calendarOffset=(new Date(calendarStart).getUTCDay()+6)%7;
-const calendarWeeks=Math.ceil(((Date.parse(dates.at(-1)+'T00:00:00Z')-calendarStart)/dayMs+calendarOffset+1)/7);
-const chartHeight=512+calendarWeeks*80+50;
-let svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 ${chartHeight}" role="img" aria-labelledby="title desc"><title id="title">停药计划：血压与心率时间记录</title><desc id="desc">横轴按实际日期时间等比例排列，时区为北京时间。${rows.map(r=>`${label(r.time)}，血压${r.systolic}/${r.diastolic}毫米汞柱，心率${r.heartRate}次每分`).join('；')}。左轴为血压，右轴为心率。${symptoms.map(s=>`${s.date}，头晕或头昏：${s.dizziness}，头痛：${s.headache}`).join('；')}</desc><rect width="900" height="${chartHeight}" rx="16" fill="#f8f6f0"/><g font-family="system-ui,Microsoft YaHei,sans-serif" fill="#302f2a"><text x="38" y="40" font-size="24">血压与心率 · 持续记录</text><text x="38" y="70" font-size="14" fill="#6b6a62">实际测量时间（北京时间） · 仅显示已记录数据</text><text x="38" y="121" font-size="14">血压（mmHg）</text><text x="862" y="121" text-anchor="end" font-size="14">心率（次/分）</text>`;
-for(let tick=lo;tick<=hi;tick+=20){svg+=`<line x1="100" x2="800" y1="${y(tick)}" y2="${y(tick)}" stroke="#dedbd2"/><text x="82" y="${y(tick)+5}" text-anchor="end" font-size="14" fill="#6b6a62">${tick}</text><text x="818" y="${y(tick)+5}" font-size="14" fill="#6b6a62">${tick}</text>`;}
-series.forEach((s,j)=>{let points=[];const flush=()=>{if(points.length)svg+=`<polyline points="${points.join(' ')}" fill="none" stroke="${s.color}" stroke-width="3" ${s.dash?`stroke-dasharray="${s.dash}"`:''}/>`;points=[];};
-svg+=`<line x1="${325+j*145}" x2="${350+j*145}" y1="94" y2="94" stroke="${s.color}" stroke-width="3" ${s.dash?`stroke-dasharray="${s.dash}"`:''}/><text x="${358+j*145}" y="99" font-size="15">${s.name}</text>`;
-for(const r of rows){const v=r[s.key];if(v==null){flush();continue;}points.push(`${x(r.time)},${y(v)}`);}flush();
-for(const r of rows){const v=r[s.key];if(v==null)continue;svg+=`<circle cx="${x(r.time)}" cy="${y(v)}" r="4.5" fill="${s.color}"><title>${escape(label(r.time)+' '+s.name+' '+v+' '+s.unit)}</title></circle>`;if(rows.length<=18)svg+=`<text x="${x(r.time)}" y="${y(v)+s.offset}" font-size="16" text-anchor="middle" fill="${s.color}" font-weight="600">${v}</text>`;}
-});
-const ticks=rows.length<=6?rows.map(r=>r.time):Array.from({length:6},(_,i)=>new Date(first+(last-first)*i/5+8*3600000).toISOString().slice(0,19)+'+08:00');
-for(const time of ticks)svg+=`<line x1="${x(time)}" x2="${x(time)}" y1="140" y2="385" stroke="#dedbd2" stroke-dasharray="2 5" opacity=".5"/><text x="${x(time)}" y="428" text-anchor="middle" font-size="15" fill="#6b6a62">${escape(label(time))}</text>`;
-svg+='<text x="100" y="467" font-size="15" fill="#6b6a62">每日症状 · 头痛、头晕／头昏</text>';
-for(const [i,item] of [{label:'均无',color:'#24864b'},{label:'有症状',color:'#cc3535'},{label:'未记录',color:'#858585'}].entries()){
- const lx=500+i*103;
- svg+=`<circle cx="${lx}" cy="462" r="6" fill="${item.color}"/><text x="${lx+13}" y="467" font-size="13" fill="#6b6a62">${item.label}</text>`;
+
+const read = path => JSON.parse(fs.readFileSync(path, 'utf8'));
+const rows = read('public/data/medication-observations.json').sort((a, b) => Date.parse(a.time) - Date.parse(b.time));
+const symptoms = read('public/data/medication-symptoms.json');
+const phases = read('public/data/medication-phases.json').sort((a, b) => a.date.localeCompare(b.date));
+const fields = ['systolic', 'diastolic', 'heartRate'];
+if (!rows.length) throw Error('No observations');
+for (const row of rows) {
+  if (!Number.isFinite(Date.parse(row.time)) || !row.time.endsWith('+08:00')) throw Error('Invalid recorded timestamp');
+  for (const key of fields) if (row[key] != null && (!Number.isFinite(row[key]) || row[key] <= 0)) throw Error('Invalid ' + key);
 }
-['一','二','三','四','五','六','日'].forEach((name,i)=>{svg+=`<text x="${150+i*100}" y="499" text-anchor="middle" font-size="13" fill="#77796f">周${name}</text>`;});
-for(let index=0;index<calendarWeeks*7;index++){
- const cx=100+(index%7)*100,cy=512+Math.floor(index/7)*80;
- svg+=`<rect x="${cx+3}" y="${cy}" width="94" height="74" rx="7" fill="#fffdf7" stroke="#dedbd2"/>`;
+if (new Set(rows.map(r => Date.parse(r.time))).size !== rows.length) throw Error('Duplicate timestamp');
+for (const day of symptoms) {
+  if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(day.date)) throw Error('Invalid symptom date');
+  for (const key of ['dizziness', 'headache']) if (!['有', '无', '未记录'].includes(day[key])) throw Error('Invalid symptom status');
 }
-for(const date of dates){
- const index=Math.round((Date.parse(date+'T00:00:00Z')-calendarStart)/dayMs)+calendarOffset;
- const cx=150+(index%7)*100,cy=512+Math.floor(index/7)*80;
- const s=symptoms.find(s=>s.date===date)||{dizziness:'未记录',headache:'未记录'};
- const present=s.dizziness==='有'||s.headache==='有',complete=s.dizziness==='无'&&s.headache==='无';
- const color=present?'#cc3535':complete?'#24864b':'#858585';
- const status=present?'有症状':complete?'均无':'未记录';
- const description=date+' 头晕／头昏：'+s.dizziness+'，头痛：'+s.headache;
- svg+=`<g role="img" aria-label="${escape(description)}"><title>${escape(description)}</title><text x="${cx}" y="${cy+23}" text-anchor="middle" font-size="14" fill="#302f2a">${escape(date.slice(5).replace('-','/'))}</text><circle cx="${cx-25}" cy="${cy+49}" r="9" fill="${color}"/><text x="${cx-9}" y="${cy+54}" font-size="12" fill="#4b4e46">${status}</text></g>`;
+for (const phase of phases) if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(phase.date) || !phase.label) throw Error('Invalid medication phase');
+
+const esc = value => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const dateLabel = date => date.slice(5, 10).replace('-', '/');
+const timeLabel = row => row.time.slice(11, 16) + (row.timeSource === 'message-time-provisional' ? '*' : '');
+const fullLabel = row => dateLabel(row.time) + ' ' + timeLabel(row);
+const left = 90, right = 910, width = right - left;
+const first = Date.parse(rows[0].time), last = Date.parse(rows.at(-1).time), span = Math.max(last - first, 3600000);
+const x = time => left + (Date.parse(time) - first) / span * width;
+const mapY = (value, min, max, top, bottom) => bottom - (value - min) / (max - min) * (bottom - top);
+const bpValues = rows.flatMap(r => [r.systolic, r.diastolic]).filter(v => v != null);
+const hrValues = rows.map(r => r.heartRate).filter(v => v != null);
+const bpMin = Math.max(0, Math.floor(Math.min(40, ...bpValues) / 20) * 20);
+const bpMax = Math.ceil(Math.max(160, ...bpValues) / 20) * 20;
+const hrMin = Math.max(0, Math.floor(Math.min(40, ...hrValues) / 10) * 10);
+const hrMax = Math.ceil(Math.max(120, ...hrValues) / 10) * 10;
+const bpY = value => mapY(value, bpMin, bpMax, 260, 500);
+const hrY = value => mapY(value, hrMin, hrMax, 650, 850);
+const dates = [...new Set([...rows.map(r => r.time.slice(0, 10)), ...symptoms.map(s => s.date)])].sort();
+const dayMs = 86400000, calendarStart = Date.parse(dates[0] + 'T00:00:00Z');
+const offset = (new Date(calendarStart).getUTCDay() + 6) % 7;
+const weeks = Math.ceil(((Date.parse(dates.at(-1) + 'T00:00:00Z') - calendarStart) / dayMs + offset + 1) / 7);
+const calendarTop = 1030, height = calendarTop + weeks * 86 + 90;
+const ticks = rows.length <= 7 ? rows.map(row => ({time: row.time, provisional: row.timeSource === 'message-time-provisional'})) :
+  Array.from({length: 6}, (_, i) => ({time: new Date(first + (last - first) * i / 5 + 8 * 3600000).toISOString().slice(0, 19) + '+08:00', provisional: false}));
+const latest = rows.at(-1), ink = '#30362d', muted = '#747b6e', grid = '#dfe4d8';
+let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 ${height}" role="img" aria-labelledby="title desc"><title id="title">停药观察：血压、心率与每日症状</title><desc id="desc">${esc(rows.map(r => fullLabel(r) + ' 血压' + r.systolic + '/' + r.diastolic + ' mmHg，心率' + r.heartRate + '次/分').join('；'))}。血压与心率上下分图，按相同日期时间位置绘制。参考带用于观察，不是个人停药标准。症状按每日反馈显示红绿灯。</desc><rect width="1000" height="${height}" rx="16" fill="#faf9f4"/><g font-family="system-ui,Microsoft YaHei,sans-serif" fill="${ink}">`;
+const text = (xx, yy, value, size = 16, fill = ink, extra = '') => `<text x="${xx}" y="${yy}" font-size="${size}" fill="${fill}" ${extra}>${esc(value)}</text>`;
+const line = (x1, y1, x2, y2, color = grid, dash = '') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" ${dash ? 'stroke-dasharray="' + dash + '"' : ''}/>`;
+const band = (lo, hi, yy, color, id) => `<rect data-band="${id}" x="${left}" y="${yy(hi)}" width="${width}" height="${yy(lo)-yy(hi)}" fill="${color}"/>`;
+svg += text(42, 45, '停药观察', 28, ink, 'font-weight="600"');
+svg += text(958, 45, '最新记录 · ' + fullLabel(latest), 16, muted, 'text-anchor="end"');
+svg += text(42, 77, '血压与心率分图 · 相同时间轴 · 每日症状灯', 16, muted);
+svg += text(left, 112, '用药阶段 · 按日期标记', 14, muted);
+for (let i = 0; i < phases.length; i++) {
+  const phase = phases[i], start = Date.parse(phase.date + 'T00:00:00+08:00');
+  const end = i + 1 < phases.length ? Date.parse(phases[i+1].date + 'T00:00:00+08:00') : last;
+  if (end < first || start > last) continue;
+  const xx = Math.max(left, x(new Date(start).toISOString())), endX = Math.min(right, x(new Date(end).toISOString()));
+  svg += `<rect x="${xx}" y="126" width="${Math.max(1, endX-xx)}" height="40" rx="6" fill="#e7ebde"/>`;
+  svg += text(xx+12, 152, dateLabel(phase.date) + '起 · ' + phase.label, 15, '#536347');
 }
-svg+=`<text x="450" y="${chartHeight-15}" text-anchor="middle" font-size="12" fill="#6b6a62">每天一盏灯；红灯表示至少有一项症状，绿灯表示两项均无。</text></g></svg>`;
-const directory='public/images/health';
-fs.mkdirSync(directory,{recursive:true});fs.writeFileSync(directory+'/medication-timeline.svg',svg);
-const version=createHash('sha256').update(svg).digest('hex').slice(0,12);
-const filename='medication-timeline.'+version+'.svg';
-// Preserve versioned images referenced by cached article pages.
-fs.writeFileSync(directory+'/'+filename,svg);
-const articlePath='src/content/posts/blood-pressure-medication-day-1.md';
-const article=fs.readFileSync(articlePath,'utf8');
-const reference=/\/images\/health\/medication-timeline(?:\.[a-f0-9]{12})?\.svg(?:\?[^)\s]*)?/g;
-const updated=article.replace(reference,'/images/health/'+filename);
-if(updated===article&&!article.includes('/images/health/'+filename))throw Error('Chart reference not found in diary');
-if(updated!==article)fs.writeFileSync(articlePath,updated);
-console.log(`Rendered ${rows.length} observations on one actual-time chart.`);
+
+function axes(min, max, step, yy, top, bottom, unit) {
+  let out = text(left-15, top-12, unit, 13, muted, 'text-anchor="end"');
+  for (let value = min; value <= max; value += step) {
+    out += line(left, yy(value), right, yy(value));
+    out += text(left-15, yy(value)+5, value, 14, muted, 'text-anchor="end"');
+  }
+  for (const tick of ticks) {
+    const xx = x(tick.time);
+    out += line(xx, top, xx, bottom, grid, '3 5');
+    out += text(xx, bottom+29, dateLabel(tick.time), 14, muted, 'text-anchor="middle"');
+    out += text(xx, bottom+49, tick.time.slice(11,16) + (tick.provisional ? '*' : ''), 14, muted, 'text-anchor="middle"');
+  }
+  for (const phase of phases) {
+    const stamp = Date.parse(phase.date + 'T00:00:00+08:00');
+    if (stamp > last) continue;
+    const xx = Math.max(left, x(new Date(stamp).toISOString()));
+    if (xx <= right) out += line(xx, top, xx, bottom, '#8d997c', '5 5');
+  }
+  return out;
+}
+function plot(key, yy, color, dash = '') {
+  let out = '', points = [];
+  const flush = () => {
+    if (points.length) out += `<polyline data-series="${key}" points="${points.join(' ')}" fill="none" stroke="${color}" stroke-width="3" stroke-linejoin="round" ${dash ? 'stroke-dasharray="'+dash+'"' : ''}/>`;
+    points = [];
+  };
+  for (const row of rows) { if (row[key] == null) { flush(); continue; } points.push(x(row.time)+','+yy(row[key])); }
+  flush();
+  for (const row of rows) {
+    if (row[key] == null) continue;
+    const provisional = row.timeSource === 'message-time-provisional';
+    out += `<circle data-reading="${key}" cx="${x(row.time)}" cy="${yy(row[key])}" r="5" stroke="${color}" stroke-width="2" fill="${provisional ? '#fffdf7' : color}"><title>${esc(fullLabel(row)+' '+key+' '+row[key]+(provisional ? '；时间暂按消息时间记录' : ''))}</title></circle>`;
+    if (rows.length <= 18) out += text(x(row.time) + (row === rows[0] ? 10 : 0), yy(row[key]) + (key === 'diastolic' ? 23 : -15), row[key], 17, color, 'text-anchor="' + (row === rows[0] ? 'start' : 'middle') + '" font-weight="600"');
+  }
+  return out;
+}
+svg += text(left, 209, '01  血压', 24, ink, 'font-weight="600"');
+svg += text(right, 209, '最新 ' + latest.systolic + '/' + latest.diastolic + ' mmHg', 18, '#a4543a', 'text-anchor="end"');
+svg += text(left, 238, '收缩压参考 90–<135', 15, '#a4543a');
+svg += text(365, 238, '舒张压参考 60–<85 mmHg', 15, '#3d746e');
+svg += band(90, 135, bpY, '#f5e9de', 'systolic-90-135');
+svg += band(60, 85, bpY, '#e4f0e9', 'diastolic-60-85');
+svg += axes(bpMin, bpMax, 20, bpY, 260, 500, 'mmHg');
+for (const boundary of [90, 135]) svg += line(left, bpY(boundary), right, bpY(boundary), '#c49a82', '6 4');
+for (const boundary of [60, 85]) svg += line(left, bpY(boundary), right, bpY(boundary), '#7ca296', '6 4');
+svg += plot('systolic', bpY, '#a4543a');
+svg += plot('diastolic', bpY, '#3d746e', '7 4');
+svg += text(left, 607, '02  心率', 24, ink, 'font-weight="600"');
+svg += text(right, 607, '最新 ' + latest.heartRate + ' 次/分', 18, '#586c4a', 'text-anchor="end"');
+svg += text(left, 635, '60–100 常见静息参考', 15, '#47714c');
+svg += text(370, 635, '50–<60 观察带；<50 或 >100 留意带', 14, muted);
+svg += band(hrMin, 50, hrY, '#f7e6e3', 'heart-low');
+svg += band(50, 60, hrY, '#f7efdb', 'heart-observe');
+svg += band(60, 100, hrY, '#e5efdf', 'heart-reference-60-100');
+svg += band(100, hrMax, hrY, '#f7e6e3', 'heart-high');
+svg += axes(hrMin, hrMax, 20, hrY, 650, 850, '次/分');
+for (const boundary of [50, 60, 100]) svg += line(left, hrY(boundary), right, hrY(boundary), '#a2af94', '6 4');
+svg += plot('heartRate', hrY, '#586c4a');
+svg += text(left, 934, '* 空心点：时间按消息时间暂记。折线只连接已有记录，不补缺测值。', 14, muted);
+svg += text(left, 978, '03  每日症状', 24, ink, 'font-weight="600"');
+for (const [i, item] of [{name:'均无', color:'#24864b'}, {name:'有症状', color:'#cc3535'}, {name:'未记录', color:'#858585'}].entries()) {
+  const xx = 560 + i*115;
+  svg += `<circle cx="${xx}" cy="972" r="6" fill="${item.color}"/>` + text(xx+13, 978, item.name, 14, muted);
+}
+const cellW = width/7;
+['一','二','三','四','五','六','日'].forEach((day,i) => { svg += text(left+(i+.5)*cellW, calendarTop-12, '周'+day, 14, muted, 'text-anchor="middle"'); });
+for (let index = 0; index < weeks*7; index++) {
+  const xx = left+(index%7)*cellW, yy = calendarTop+Math.floor(index/7)*86;
+  svg += `<rect x="${xx+3}" y="${yy}" width="${cellW-6}" height="78" rx="7" fill="#fffdf7" stroke="${grid}"/>`;
+}
+for (const date of dates) {
+  const index = Math.round((Date.parse(date+'T00:00:00Z')-calendarStart)/dayMs)+offset;
+  const xx = left+(index%7+.5)*cellW, yy = calendarTop+Math.floor(index/7)*86;
+  const day = symptoms.find(s => s.date === date) || {dizziness:'未记录', headache:'未记录'};
+  const present = day.dizziness === '有' || day.headache === '有';
+  const complete = day.dizziness === '无' && day.headache === '无';
+  const color = present ? '#cc3535' : complete ? '#24864b' : '#858585';
+  const status = present ? '有症状' : complete ? '均无' : '未记录';
+  const detail = date+' 头痛：'+day.headache+'，头晕／头昏：'+day.dizziness;
+  svg += `<g data-symptom-date="${date}" role="img" aria-label="${esc(detail)}"><title>${esc(detail)}</title>` + text(xx, yy+25, dateLabel(date), 15, ink, 'text-anchor="middle"');
+  svg += `<circle cx="${xx-26}" cy="${yy+52}" r="9" fill="${color}"/>` + text(xx-10, yy+57, status, 13) + '</g>';
+}
+svg += text(left, height-49, '症状为当日反馈：红灯＝头痛或头晕／头昏；绿灯＝两项均无。', 14, muted);
+svg += text(left, height-20, '阴影为观察参考带，不用于单次诊断，也不是个人减药或停药标准。', 14, muted);
+svg += '</g></svg>';
+const directory = 'public/images/health';
+fs.mkdirSync(directory, {recursive:true});
+fs.writeFileSync(directory+'/medication-timeline.svg', svg);
+const version = createHash('sha256').update(svg).digest('hex').slice(0,12);
+const filename = 'medication-timeline.'+version+'.svg';
+// Keep old versioned images available for cached article pages.
+fs.writeFileSync(directory+'/'+filename, svg);
+const articlePath = 'src/content/posts/blood-pressure-medication-day-1.md';
+const article = fs.readFileSync(articlePath, 'utf8');
+const reference = /\/images\/health\/medication-timeline(?:\.[a-f0-9]{12})?\.svg(?:\?[^)\s]*)?/g;
+const updated = article.replace(reference, '/images/health/'+filename);
+if (updated === article && !article.includes('/images/health/'+filename)) throw Error('Chart reference not found');
+if (updated !== article) fs.writeFileSync(articlePath, updated);
+console.log('Rendered '+rows.length+' observations, aligned BP/HR panels and '+dates.length+' symptom days.');

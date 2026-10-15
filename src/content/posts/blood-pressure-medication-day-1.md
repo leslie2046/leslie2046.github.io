@@ -28,8 +28,22 @@ tags: [生活, 血压, 用药观察]
 
 ## 血压、心率与症状
 
-![血压、心率与每日症状累计图。最新记录：2026年10月15日21:12（按消息时间暂记），血压103/75 mmHg，心率74次/分。](/images/health/medication-timeline.686365e1d2f1.svg)
+<div class="health-chart-scroll" role="region" aria-label="血压、心率与症状图表，可横向滚动" tabindex="0">
 
-横轴为实际测量时间（北京时间）；左轴为血压，右轴为心率。图下方每天一盏症状灯：**绿灯＝无头痛、无头晕／头昏；红灯＝至少有一项；灰灯＝未记录。**
+![血压、心率与每日症状累计图。最新记录：2026年10月15日21:12（按消息时间暂记），血压103/75 mmHg，心率74次/分。](/images/health/medication-timeline.9aabcb72d01c.svg)
+
+</div>
+
+上图为血压，下图为心率，共用日期时间位置（北京时间）。底部每天一盏症状灯：**绿灯＝两项均无；红灯＝有头痛或头晕／头昏；灰灯＝未记录。**
+
+窄屏可横向滑动图表。
 
 *10 月 15 日晚这次测量暂按消息时间 21:12 记录，实际测量时间待确认。*
+
+<details>
+<summary>参考区间说明与来源</summary>
+
+- **血压观察带**：收缩压 90–<135、舒张压 60–<85 mmHg。下界参考低血压常用界值，上界参考家庭血压评估阈值；这一区间不是统一的“正常血压”定义，也不是医生为我设定的个人目标。高血压评估需要规范的多次测量与平均值，不能依据单个点诊断。[NHS：低血压](https://www.nhs.uk/conditions/low-blood-pressure-hypotension/) · [NICE NG136](https://www.nice.org.uk/guidance/ng136/chapter/Recommendations)
+- **心率参考带**：60–100 次/分为多数成人常见静息范围；50–<60 的黄色区、<50 或 >100 的淡红区仅是图表观察提示，不是个人处置阈值。药物、运动及身体状态会影响心率，个人范围以医生要求为准。[AHA：心率与药物影响](https://www.heart.org/en/health-topics/high-blood-pressure/the-facts-about-high-blood-pressure/all-about-heart-rate-pulse)
+
+</details>

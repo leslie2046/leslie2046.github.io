@@ -1,0 +1,15 @@
+.health-dashboard{margin:1.5rem 0;padding:20px;border:1px solid var(--line,#dedfd5);border-radius:14px;min-width:0;background:var(--surface,transparent)}
+.health-dashboard[hidden],.health-chart-scroll[hidden]{display:none!important}
+.health-dashboard button,.health-dashboard input{font:inherit;color:inherit;border:1px solid #b8bcae;border-radius:7px;background:transparent;padding:6px 12px;cursor:pointer;line-height:1.5}
+.health-dashboard button:hover{background:#83996b18}.health-dashboard button:focus-visible,.health-dashboard input:focus-visible{outline:2px solid #738763;outline-offset:3px}
+.health-dashboard button[aria-pressed=true]{background:#6b8057;color:#fff;border-color:#6b8057}.health-dashboard button:disabled{opacity:.3;cursor:default}
+.health-toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;font-size:13px}.health-zoom{display:flex;gap:5px;margin-left:auto}
+.prose .health-dashboard p{font-size:12px;line-height:1.7;margin:10px 0;opacity:.8}.health-phase{border-left:3px solid #8b987e;padding-left:10px}
+.health-date-picker{font-size:12px;margin:8px 0}.health-date-picker form{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}.health-date-picker input{max-width:145px;padding:4px}
+.health-interactive-chart{height:620px;width:100%;min-width:0;touch-action:pan-y}.health-calendar{border-top:1px solid #a0a68d50;padding-top:20px;margin-top:16px}
+.health-calendar-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.prose .health-calendar h3{font-size:17px;margin:0}.health-calendar-heading>div{display:flex;gap:12px;align-items:center;font-size:13px}.health-calendar-heading button{padding:2px 10px;font-size:20px}
+.health-weekdays,.health-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;text-align:center}.health-weekdays{font-size:12px;opacity:.65;margin:16px 0 8px}
+.health-days .health-day{display:flex;flex-direction:column;align-items:center;gap:8px;min-height:58px;padding:7px 2px;border-color:#a0a68d30;font-size:13px}
+.health-dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex-shrink:0}.health-dot.green{background:#428457}.health-dot.red{background:#c24a42}.health-dot.grey{background:#b5b7b0}
+.health-calendar-key{display:flex;gap:15px;flex-wrap:wrap;font-size:12px}.health-calendar-key span{display:flex;align-items:center;gap:5px}
+@media(max-width:540px){.health-dashboard{padding:12px 8px}.health-toolbar{gap:4px;font-size:12px}.health-toolbar button{padding:5px 8px}.health-calendar-heading>div{gap:6px}.health-days{gap:3px}.health-days .health-day{min-height:52px}.health-window{overflow-wrap:anywhere}}

@@ -1,0 +1,103 @@
+---
+import rows from '../../public/data/medication-observations.json';
+import symptoms from '../../public/data/medication-symptoms.json';
+import phases from '../../public/data/medication-phases.json';
+import '../styles/health-dashboard.css';
+---
+<section class="health-dashboard" data-health-dashboard data-records={JSON.stringify({ rows, symptoms, phases })} hidden aria-label="血压、心率与症状交互图表">
+  <div class="health-toolbar" role="group" aria-label="查看时间范围">
+    <button type="button" data-range="7" aria-pressed="true">近 7 天</button>
+    <button type="button" data-range="14" aria-pressed="false">14 天</button>
+    <button type="button" data-range="30" aria-pressed="false">30 天</button>
+    <button type="button" data-range="all" aria-pressed="false">全部</button>
+    <span class="health-zoom"><button type="button" data-zoom="0.5" aria-label="放大时间范围">＋</button><button type="button" data-zoom="2" aria-label="缩小时间范围">－</button></span>
+  </div>
+  <p class="health-window" aria-live="polite"></p>
+  <details class="health-date-picker"><summary>选择起止日期</summary><form><label>从 <input type="date" name="start" required /></label><label>至 <input type="date" name="end" required /></label><button type="submit">查看</button></form></details>
+  <p class="health-phase">{phases.at(-1)?.label}</p>
+  <div class="health-interactive-chart" role="img" aria-label="血压和心率折线图，共用时间范围；悬停或点按查看测量详情"></div>
+  <p class="health-hint">点按或悬停查看数值；拖动平移，双指或 Ctrl＋滚轮缩放。竖虚线表示用药阶段起点。</p>
+  <div class="health-calendar">
+    <div class="health-calendar-heading"><h3>每日症状</h3><div><button type="button" data-month="-1" aria-label="上个月">‹</button><strong class="health-month"></strong><button type="button" data-month="1" aria-label="下个月">›</button></div></div>
+    <p class="health-hint">按月独立查看，不随折线图缩放。</p>
+    <div class="health-weekdays" aria-hidden="true">{['一','二','三','四','五','六','日'].map(day => <span>{day}</span>)}</div>
+    <div class="health-days" role="group" aria-label="每日症状日历"></div>
+    <p class="health-day-detail" aria-live="polite">点选日期查看头痛、头晕／头昏记录。</p>
+    <div class="health-calendar-key"><span><i class="health-dot green"></i>均无</span><span><i class="health-dot red"></i>有任一症状</span><span><i class="health-dot grey"></i>未完整记录</span></div>
+  </div>
+</section>
+<script>
+  import { adjacentMonth, createChartOption, dateKey, extent, formatTime, monthCells, normalizeWindow, rangeWindow, DAY } from '../lib/health-dashboard';
+  import type { Observation, SymptomDay, MedicationPhase, TimeWindow } from '../lib/health-dashboard';
+  async function startDashboard(root: HTMLElement) {
+    const { init } = await import('../lib/health-chart-runtime');
+    const { rows, symptoms, phases } = JSON.parse(root.dataset.records!) as { rows: Observation[]; symptoms: SymptomDay[]; phases: MedicationPhase[] };
+    const all = extent(rows);
+    let window = rangeWindow(rows, 7), navigator = false;
+    const rangeButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-range]')];
+    const start = root.querySelector<HTMLInputElement>('[name=start]')!, end = root.querySelector<HTMLInputElement>('[name=end]')!;
+    for (const input of [start, end]) { input.min = dateKey(all.start); input.max = dateKey(all.end); }
+    const fallback = document.querySelector<HTMLElement>('.health-chart-scroll');
+    if (fallback) fallback.before(root);
+    root.hidden = false;
+    const chart = init(root.querySelector<HTMLElement>('.health-interactive-chart')!, undefined, { renderer: 'svg', useCoarsePointer: true });
+    const dark = () => document.documentElement.dataset.theme === 'dark';
+    const caption = () => {
+      const count = rows.filter(row => Date.parse(row.time) >= window.start && Date.parse(row.time) <= window.end).length;
+      root.querySelector('.health-window')!.textContent = formatTime(window.start) + ' — ' + formatTime(window.end) + ' · ' + count + ' 次测量（北京时间）';
+      start.value = dateKey(window.start); end.value = dateKey(window.end);
+    };
+    const render = () => { chart.setOption(createChartOption(rows, phases, window, navigator, dark()), { notMerge: true }); caption(); };
+    const clearPreset = () => rangeButtons.forEach(button => button.setAttribute('aria-pressed', 'false'));
+    render();
+    if (fallback) fallback.hidden = true;
+    rangeButtons.forEach(button => button.addEventListener('click', () => {
+      const days = button.dataset.range === 'all' ? 'all' : Number(button.dataset.range);
+      window = rangeWindow(rows, days); navigator = days === 'all' || days === 30;
+      clearPreset(); button.setAttribute('aria-pressed', 'true'); render();
+    }));
+    chart.on('datazoom', () => {
+      const zoom = (chart.getOption().dataZoom as { startValue: number; endValue: number }[])[0]!;
+      window = { start: Number(zoom.startValue), end: Number(zoom.endValue) }; clearPreset(); caption();
+    });
+    const manual = (next: TimeWindow) => { window = normalizeWindow(next, all); navigator = true; clearPreset(); render(); };
+    root.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach(button => button.addEventListener('click', () => {
+      const center = (window.start + window.end) / 2, half = (window.end - window.start) * Number(button.dataset.zoom) / 2;
+      manual({ start: center - half, end: center + half });
+    }));
+    root.querySelector('form')!.addEventListener('submit', event => {
+      event.preventDefault(); end.setCustomValidity('');
+      if (start.value > end.value) { end.setCustomValidity('结束日期不能早于开始日期'); end.reportValidity(); return; }
+      manual({ start: Date.parse(start.value + 'T00:00:00+08:00'), end: Date.parse(end.value + 'T00:00:00+08:00') + DAY - 1 });
+    });
+    end.addEventListener('input', () => end.setCustomValidity(''));
+    const dates = [...rows.map(row => dateKey(Date.parse(row.time))), ...symptoms.map(day => day.date)].sort();
+    const firstMonth = dates[0]!.slice(0, 7), lastMonth = dates.at(-1)!.slice(0, 7);
+    let month = lastMonth;
+    const monthButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-month]')];
+    const renderMonth = () => {
+      root.querySelector('.health-month')!.textContent = month.replace('-', ' 年 ') + ' 月';
+      const grid = root.querySelector('.health-days')!; grid.replaceChildren();
+      monthButtons.forEach(button => button.disabled = Number(button.dataset.month) < 0 ? month <= firstMonth : month >= lastMonth);
+      for (const cell of monthCells(month, symptoms)) {
+        if (!cell) { grid.append(document.createElement('span')); continue; }
+        const button = document.createElement('button'); button.type = 'button'; button.title = cell.description;
+        button.setAttribute('aria-label', cell.description); button.className = 'health-day';
+        const number = document.createElement('span'); number.textContent = String(cell.day);
+        const dot = document.createElement('i'); dot.className = 'health-dot ' + cell.state;
+        button.append(number, dot); button.addEventListener('click', () => {
+          grid.querySelectorAll('button').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+          root.querySelector('.health-day-detail')!.textContent = cell.description;
+        }); grid.append(button);
+      }
+    };
+    monthButtons.forEach(button => button.addEventListener('click', () => { month = adjacentMonth(month, Number(button.dataset.month)); renderMonth(); root.querySelector('.health-day-detail')!.textContent = '点选日期查看头痛、头晕／头昏记录。'; }));
+    renderMonth();
+    const resize = new ResizeObserver(() => chart.resize()); resize.observe(root);
+    const theme = new MutationObserver(render); theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  }
+  document.querySelectorAll<HTMLElement>('[data-health-dashboard]').forEach(root => startDashboard(root).catch(error => {
+    root.hidden = true; const fallback = document.querySelector<HTMLElement>('.health-chart-scroll'); if (fallback) fallback.hidden = false;
+    console.error('Health dashboard initialization failed', error);
+  }));
+</script>

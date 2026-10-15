@@ -1,5 +1,5 @@
 ---
-title: 'Dify 知识检索性能优化：一次 P95 延迟下降 73.7% 的实践'
+title: 'Dify 知识检索性能优化（一）：一次 P95 延迟下降 73.7% 的实践'
 description: '从模型供应商声明缓存、查询向量的延迟初始化到重排信息复用，记录一次真实的检索链路优化与长尾延迟思考。'
 date: 2026-10-09
 tags: [Dify, RAG, 性能优化, 开源]
@@ -9,6 +9,8 @@ source: https://github.com/langgenius/dify/pull/42673
 references: /references/dify-sources/
 download: /downloads/dify-retrieval-performance.md
 ---
+**系列文章**：**（一）缓存与初始化优化** · [（二）评分与引用组装优化](/posts/dify-retrieval-post-processing/)
+
 ![Dify 知识检索性能优化封面，标注 P95 延迟下降 73.7% 及测试范围](/images/dify-cover.png)
 
 封面流程与曲线为示意，性能数据及测试条件见正文。

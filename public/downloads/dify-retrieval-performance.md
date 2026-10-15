@@ -1,4 +1,6 @@
-# Dify 知识检索性能优化：一次 P95 延迟下降 73.7% 的实践
+# Dify 知识检索性能优化（一）：一次 P95 延迟下降 73.7% 的实践
+
+**系列文章**：**（一）缓存与初始化优化** · [（二）评分与引用组装优化](https://leslie2046.github.io/posts/dify-retrieval-post-processing/)
 
 ![Dify 知识检索性能优化封面，标注 P95 延迟下降 73.7% 及测试范围](https://leslie2046.github.io/images/dify-cover.png)
 

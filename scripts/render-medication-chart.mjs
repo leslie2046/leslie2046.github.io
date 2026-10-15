@@ -54,7 +54,7 @@ const directory='public/images/health';
 fs.mkdirSync(directory,{recursive:true});fs.writeFileSync(directory+'/medication-timeline.svg',svg);
 const version=createHash('sha256').update(svg).digest('hex').slice(0,12);
 const filename='medication-timeline.'+version+'.svg';
-for(const file of fs.readdirSync(directory))if(/^medication-timeline[.][a-f0-9]{12}[.]svg$/.test(file)&&file!==filename)fs.unlinkSync(directory+'/'+file);
+// Preserve versioned images referenced by cached article pages.
 fs.writeFileSync(directory+'/'+filename,svg);
 const articlePath='src/content/posts/blood-pressure-medication-day-1.md';
 const article=fs.readFileSync(articlePath,'utf8');

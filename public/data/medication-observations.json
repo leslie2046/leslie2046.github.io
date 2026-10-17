@@ -50,5 +50,12 @@
     "diastolic": 86,
     "heartRate": 66,
     "timeSource": "message-time-provisional"
+  },
+  {
+    "time": "2026-10-17T11:32:00+08:00",
+    "systolic": 109,
+    "diastolic": 83,
+    "heartRate": 83,
+    "timeSource": "message-time-provisional"
   }
 ]

@@ -1,6 +1,6 @@
 import type { EChartsCoreOption } from 'echarts/core';
 
-export interface Observation { time: string; systolic: number; diastolic: number; heartRate: number; timeSource?: string; }
+export interface Observation { time: string; systolic: number; diastolic: number; heartRate: number; timeSource?: string; note?: string; }
 export interface SymptomDay { date: string; dizziness: string; headache: string; }
 export interface MedicationPhase { date: string; label: string; }
 export interface TimeWindow { start: number; end: number; }
@@ -61,7 +61,7 @@ export function createChartOption(rows: Observation[], phases: MedicationPhase[]
     const stamp = item?.value?.[0];
     const row = rows.find(row => Date.parse(row.time) === Number(stamp));
     if (!row) return '';
-    return formatTime(Date.parse(row.time)) + (row.timeSource === 'message-time-provisional' ? ' *暂记时间' : '') + '\n血压  ' + row.systolic + '/' + row.diastolic + ' mmHg\n心率  ' + row.heartRate + ' 次/分';
+    return formatTime(Date.parse(row.time)) + (row.timeSource === 'message-time-provisional' ? ' *暂记时间' : '') + '\n血压  ' + row.systolic + '/' + row.diastolic + ' mmHg\n心率  ' + row.heartRate + ' 次/分' + (row.note ? '\n备注  ' + row.note : '');
   };
   const bpMin = Math.max(0, Math.floor(Math.min(40, ...rows.map(r => r.diastolic)) / 20) * 20);
   const bpMax = Math.ceil(Math.max(160, ...rows.map(r => r.systolic)) / 20) * 20;

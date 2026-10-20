@@ -83,5 +83,18 @@
     "systolic": 129,
     "diastolic": 85,
     "heartRate": 70
+  },
+  {
+    "time": "2026-10-19T20:00:00+08:00",
+    "systolic": 113,
+    "diastolic": 79,
+    "heartRate": 93,
+    "note": "心脏不舒服"
+  },
+  {
+    "time": "2026-10-20T06:44:00+08:00",
+    "systolic": 114,
+    "diastolic": 80,
+    "heartRate": 67
   }
 ]

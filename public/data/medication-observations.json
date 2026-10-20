@@ -96,5 +96,12 @@
     "systolic": 114,
     "diastolic": 80,
     "heartRate": 67
+  },
+  {
+    "time": "2026-10-20T20:34:00+08:00",
+    "systolic": 111,
+    "diastolic": 82,
+    "heartRate": 74,
+    "timeSource": "message-time-provisional"
   }
 ]

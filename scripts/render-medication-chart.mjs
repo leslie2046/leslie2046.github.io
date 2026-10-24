@@ -55,9 +55,11 @@ for (let i = 0; i < phases.length; i++) {
   const end = i + 1 < phases.length ? Date.parse(phases[i+1].date + 'T00:00:00+08:00') : last;
   if (end < first || start > last) continue;
   const xx = Math.max(left, x(new Date(start).toISOString())), endX = Math.min(right, x(new Date(end).toISOString()));
-  svg += `<rect x="${xx}" y="126" width="${Math.max(1, endX-xx)}" height="40" rx="6" fill="#e7ebde"/>`;
-  svg += text(xx+12, 152, dateLabel(phase.date) + '起 · ' + phase.label, 15, '#536347');
+  svg += `<rect x="${xx}" y="126" width="${Math.max(1, endX-xx)}" height="40" rx="6" fill="${['#e7ebde', '#f2e6d8', '#e1ebdf'][i % 3]}"><title>${esc(phase.date + '起：' + phase.label)}</title></rect>`;
+
 }
+
+svg += text(left+12, 152, phases.map(phase => dateLabel(phase.date) + '起 ' + phase.label).join(' · '), 14, '#536347');
 
 function axes(min, max, step, yy, top, bottom, unit) {
   let out = text(left-15, top-12, unit, 13, muted, 'text-anchor="end"');

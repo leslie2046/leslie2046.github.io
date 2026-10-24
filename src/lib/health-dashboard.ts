@@ -5,6 +5,9 @@ export interface SymptomDay { date: string; dizziness: string; headache: string;
 export interface MedicationPhase { date: string; label: string; }
 export interface TimeWindow { start: number; end: number; }
 export const DAY = 86_400_000;
+export const PHASE_COLORS = ['#397cba', '#64748b', '#9961b8'];
+export function phaseColor(index: number) { return PHASE_COLORS[index % PHASE_COLORS.length]!; }
+export function phaseAt(phases: MedicationPhase[], time: number) { return [...phases].sort((a,b) => a.date.localeCompare(b.date)).filter(phase => Date.parse(phase.date + 'T00:00:00+08:00') <= time).at(-1); }
 const beijingDate = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' });
 const beijingTime = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Shanghai', hour: '2-digit', minute: '2-digit', hour12: false });
 export function dateKey(time: number) { return beijingDate.format(time); }
@@ -61,12 +64,18 @@ export function createChartOption(rows: Observation[], phases: MedicationPhase[]
     const stamp = item?.value?.[0];
     const row = rows.find(row => Date.parse(row.time) === Number(stamp));
     if (!row) return '';
-    return formatTime(Date.parse(row.time)) + (row.timeSource === 'message-time-provisional' ? ' *暂记时间' : '') + '\n血压  ' + row.systolic + '/' + row.diastolic + ' mmHg\n心率  ' + row.heartRate + ' 次/分' + (row.note ? '\n备注  ' + row.note : '');
+    const phase = phaseAt(phases, Date.parse(row.time));
+    return formatTime(Date.parse(row.time)) + (row.timeSource === 'message-time-provisional' ? ' *暂记时间' : '') + '\n血压  ' + row.systolic + '/' + row.diastolic + ' mmHg\n心率  ' + row.heartRate + ' 次/分' + (phase ? '\n用药  ' + phase.label : '') + (row.note ? '\n备注  ' + row.note : '');
   };
   const bpMin = Math.max(0, Math.floor(Math.min(40, ...rows.map(r => r.diastolic)) / 20) * 20);
   const bpMax = Math.ceil(Math.max(160, ...rows.map(r => r.systolic)) / 20) * 20;
   const hrMin = Math.max(0, Math.floor(Math.min(40, ...rows.map(r => r.heartRate)) / 10) * 10);
   const hrMax = Math.ceil(Math.max(120, ...rows.map(r => r.heartRate)) / 10) * 10;
+  const phaseBands = (max: number, height: number) => phases.map((phase, index) => [{
+    name: phase.label, xAxis: Date.parse(phase.date + 'T00:00:00+08:00'), yAxis: max,
+    itemStyle: { color: phaseColor(index), opacity: 0.92 },
+    label: { show: false }
+  }, { xAxis: index + 1 < phases.length ? Date.parse(phases[index+1]!.date + 'T00:00:00+08:00') : all.end, yAxis: max - height }]);
   return {
     animation: false, useUTC: true, backgroundColor: 'transparent', textStyle: { color: text, fontFamily: 'system-ui, sans-serif' },
     title: [{ text: '血压 · mmHg', subtext: '参考：90–<135 / 60–<85', left: 0, top: 4, textStyle: { color: text, fontSize: 17 }, subtextStyle: { color: muted, fontSize: 11 } }, { text: '心率 · 次/分', subtext: '常见静息参考：60–100', left: 0, top: 322, textStyle: { color: text, fontSize: 17 }, subtextStyle: { color: muted, fontSize: 11 } }],
@@ -81,9 +90,9 @@ export function createChartOption(rows: Observation[], phases: MedicationPhase[]
       { id: 'health-slider', type: 'slider', xAxisIndex: [0, 1], filterMode: 'none', startValue: window.start, endValue: window.end, minValueSpan: 3_600_000, show: navigator, bottom: 12, height: 28, borderColor: grid, textStyle: { color: muted }, labelFormatter: (value: number) => formatTime(value, true), handleStyle: { color: '#6f835d' }, fillerColor: dark ? '#83996b33' : '#83996b25', dataBackground: { lineStyle: { color: '#9aab8d' }, areaStyle: { color: '#cdd8c1' } } }
     ],
     series: [
-      { name: '收缩压', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: value('systolic'), showSymbol: rows.length <= 100, symbolSize: 7, label: { show: false }, itemStyle: { color: '#b65b3e' }, lineStyle: { width: 2 }, connectNulls: false, markLine, markArea: { silent: true, label: { show: false }, itemStyle: { color: dark ? '#a7663d22' : '#f5e9de' }, data: [[{ yAxis: 90 }, { yAxis: 135 }]] } },
+      { name: '收缩压', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: value('systolic'), showSymbol: rows.length <= 100, symbolSize: 7, label: { show: false }, itemStyle: { color: '#b65b3e' }, lineStyle: { width: 2 }, connectNulls: false, markLine, markArea: { silent: true, label: { show: false }, itemStyle: { color: dark ? '#a7663d22' : '#f5e9de' }, data: [[{ yAxis: 90 }, { yAxis: 135 }], ...phaseBands(bpMax, (bpMax-bpMin)*0.09)] } },
       { name: '舒张压', type: 'line', xAxisIndex: 0, yAxisIndex: 0, data: value('diastolic'), showSymbol: rows.length <= 100, symbolSize: 7, label: { show: false }, itemStyle: { color: '#448179' }, lineStyle: { width: 2, type: 'dashed' }, connectNulls: false, markArea: { silent: true, label: { show: false }, itemStyle: { color: dark ? '#42817022' : '#e4f0e9' }, data: [[{ yAxis: 60 }, { yAxis: 85 }]] } },
-      { name: '心率', type: 'line', xAxisIndex: 1, yAxisIndex: 1, data: value('heartRate'), showSymbol: rows.length <= 100, symbolSize: 7, label: { show: false }, itemStyle: { color: '#6c8657' }, lineStyle: { width: 2 }, connectNulls: false, markLine, markArea: { silent: true, label: { show: false }, data: [[{ yAxis: hrMin, itemStyle: { color: dark ? '#9c333322' : '#f7e6e3' } }, { yAxis: 50 }], [{ yAxis: 50, itemStyle: { color: dark ? '#9b792522' : '#f7efdb' } }, { yAxis: 60 }], [{ yAxis: 60, itemStyle: { color: dark ? '#55794433' : '#e5efdf' } }, { yAxis: 100 }], [{ yAxis: 100, itemStyle: { color: dark ? '#9c333322' : '#f7e6e3' } }, { yAxis: hrMax }]] } }
+      { name: '心率', type: 'line', xAxisIndex: 1, yAxisIndex: 1, data: value('heartRate'), showSymbol: rows.length <= 100, symbolSize: 7, label: { show: false }, itemStyle: { color: '#6c8657' }, lineStyle: { width: 2 }, connectNulls: false, markLine, markArea: { silent: true, label: { show: false }, data: [[{ yAxis: hrMin, itemStyle: { color: dark ? '#9c333322' : '#f7e6e3' } }, { yAxis: 50 }], [{ yAxis: 50, itemStyle: { color: dark ? '#9b792522' : '#f7efdb' } }, { yAxis: 60 }], [{ yAxis: 60, itemStyle: { color: dark ? '#55794433' : '#e5efdf' } }, { yAxis: 100 }], [{ yAxis: 100, itemStyle: { color: dark ? '#9c333322' : '#f7e6e3' } }, { yAxis: hrMax }], ...phaseBands(hrMax, (hrMax-hrMin)*0.10)] } }
     ]
   };
 }

@@ -55,11 +55,22 @@ for (let i = 0; i < phases.length; i++) {
   const end = i + 1 < phases.length ? Date.parse(phases[i+1].date + 'T00:00:00+08:00') : last;
   if (end < first || start > last) continue;
   const xx = Math.max(left, x(new Date(start).toISOString())), endX = Math.min(right, x(new Date(end).toISOString()));
-  svg += `<rect x="${xx}" y="126" width="${Math.max(1, endX-xx)}" height="40" rx="6" fill="${['#e7ebde', '#f2e6d8', '#e1ebdf'][i % 3]}"><title>${esc(phase.date + '起：' + phase.label)}</title></rect>`;
+
+  svg += `<rect x="${xx}" y="126" width="${Math.max(1, endX-xx)}" height="40" rx="6" fill="${['#deebf7', '#e7ebf0', '#ece0f6'][i % 3]}"><title>${esc(phase.date + '起：' + phase.label)}</title></rect>`;
 
 }
 
 svg += text(left+12, 152, phases.map(phase => dateLabel(phase.date) + '起 ' + phase.label).join(' · '), 14, '#536347');
+
+function medicationStrip(top) {
+  return phases.map((phase,i) => {
+    const start = Date.parse(phase.date+'T00:00:00+08:00');
+    const end = phases[i+1] ? Date.parse(phases[i+1].date+'T00:00:00+08:00') : last;
+    if (end < first || start > last) return '';
+    const xx = Math.max(left,x(new Date(start).toISOString())), endX = Math.min(right,x(new Date(end).toISOString()));
+    return `<rect data-medication-phase="${phase.date}" x="${xx}" y="${top}" width="${Math.max(1,endX-xx)}" height="14" fill="${['#397cba','#64748b','#9961b8'][i%3]}"><title>${esc(phase.label)}</title></rect>`;
+  }).join('');
+}
 
 function axes(min, max, step, yy, top, bottom, unit) {
   let out = text(left-15, top-12, unit, 13, muted, 'text-anchor="end"');
@@ -106,6 +117,7 @@ svg += band(60, 85, bpY, '#e4f0e9', 'diastolic-60-85');
 svg += axes(bpMin, bpMax, 20, bpY, 260, 500, 'mmHg');
 for (const boundary of [90, 135]) svg += line(left, bpY(boundary), right, bpY(boundary), '#c49a82', '6 4');
 for (const boundary of [60, 85]) svg += line(left, bpY(boundary), right, bpY(boundary), '#7ca296', '6 4');
+svg += medicationStrip(260);
 svg += plot('systolic', bpY, '#a4543a');
 svg += plot('diastolic', bpY, '#3d746e', '7 4');
 svg += text(left, 607, '02  心率', 24, ink, 'font-weight="600"');
@@ -118,6 +130,7 @@ svg += band(60, 100, hrY, '#e5efdf', 'heart-reference-60-100');
 svg += band(100, hrMax, hrY, '#f7e6e3', 'heart-high');
 svg += axes(hrMin, hrMax, 20, hrY, 650, 850, '次/分');
 for (const boundary of [50, 60, 100]) svg += line(left, hrY(boundary), right, hrY(boundary), '#a2af94', '6 4');
+svg += medicationStrip(650);
 svg += plot('heartRate', hrY, '#586c4a');
 svg += text(left, 934, '* 空心点：时间按消息时间暂记。折线只连接已有记录，不补缺测值。', 14, muted);
 svg += text(left, 978, '03  每日症状', 24, ink, 'font-weight="600"');

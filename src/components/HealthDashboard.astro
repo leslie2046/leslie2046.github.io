@@ -3,6 +3,7 @@ import rows from '../../public/data/medication-observations.json';
 import symptoms from '../../public/data/medication-symptoms.json';
 import phases from '../../public/data/medication-phases.json';
 import '../styles/health-dashboard.css';
+import { dateKey, DAY, phaseColor } from '../lib/health-dashboard';
 ---
 <section class="health-dashboard" data-health-dashboard data-records={JSON.stringify({ rows, symptoms, phases })} hidden aria-label="血压、心率与症状交互图表">
   <div class="health-toolbar" role="group" aria-label="查看时间范围">
@@ -14,9 +15,15 @@ import '../styles/health-dashboard.css';
   </div>
   <p class="health-window" aria-live="polite"></p>
   <details class="health-date-picker"><summary>选择起止日期</summary><form><label>从 <input type="date" name="start" required /></label><label>至 <input type="date" name="end" required /></label><button type="submit">查看</button></form></details>
-  <p class="health-phase">{phases.at(-1)?.label}</p>
+  <div class="health-phase-cards" role="group" aria-label="美托洛尔用药阶段，点击查看对应日期">
+    {phases.map((phase, index) => <button type="button" data-phase={index} aria-pressed="false" style={`--phase-color:${phaseColor(index)}`}>
+      <span class="health-phase-date">{phase.date.slice(5).replace('-', '/')} — {phases[index+1] ? dateKey(Date.parse(phases[index+1]!.date + 'T00:00:00+08:00')-DAY).slice(5).replace('-', '/') : '至今'}</span>
+      <strong>{phase.label}</strong><span class="health-phase-action">{index === phases.length-1 ? '当前阶段 · ' : ''}点击查看 →</span>
+    </button>)}
+  </div>
+  <p class="health-phase-baseline">缬沙坦氨氯地平片（Ⅰ）：全程停用。图内顶部色带与上方阶段颜色对应。</p>
   <div class="health-interactive-chart" role="img" aria-label="血压和心率折线图，共用时间范围；悬停或点按查看测量详情"></div>
-  <p class="health-hint">点按或悬停查看数值；拖动平移，双指或 Ctrl＋滚轮缩放。竖虚线表示用药阶段起点。</p>
+  <p class="health-hint">点按或悬停查看数值；拖动平移，双指或 Ctrl＋滚轮缩放。两个图的顶部色带均表示用药阶段，随时间范围同步缩放。</p>
   <div class="health-calendar">
     <div class="health-calendar-heading"><h3>每日症状</h3><div><button type="button" data-month="-1" aria-label="上个月">‹</button><strong class="health-month"></strong><button type="button" data-month="1" aria-label="下个月">›</button></div></div>
     <p class="health-hint">按月独立查看，不随折线图缩放。</p>
@@ -48,7 +55,7 @@ import '../styles/health-dashboard.css';
       start.value = dateKey(window.start); end.value = dateKey(window.end);
     };
     const render = () => { chart.setOption(createChartOption(rows, phases, window, navigator, dark()), { notMerge: true }); caption(); };
-    const clearPreset = () => rangeButtons.forEach(button => button.setAttribute('aria-pressed', 'false'));
+    const clearPreset = () => root.querySelectorAll('[data-range], [data-phase]').forEach(button => button.setAttribute('aria-pressed', 'false'));
     render();
     if (fallback) fallback.hidden = true;
     rangeButtons.forEach(button => button.addEventListener('click', () => {
@@ -61,6 +68,11 @@ import '../styles/health-dashboard.css';
       window = { start: Number(zoom.startValue), end: Number(zoom.endValue) }; clearPreset(); caption();
     });
     const manual = (next: TimeWindow) => { window = normalizeWindow(next, all); navigator = true; clearPreset(); render(); };
+    root.querySelectorAll<HTMLButtonElement>('[data-phase]').forEach(button => button.addEventListener('click', () => {
+      const index = Number(button.dataset.phase), phase = phases[index]!;
+      manual({ start: Date.parse(phase.date + 'T00:00:00+08:00'), end: phases[index+1] ? Date.parse(phases[index+1]!.date + 'T00:00:00+08:00') - 1 : all.end });
+      button.setAttribute('aria-pressed', 'true');
+    }));
     root.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach(button => button.addEventListener('click', () => {
       const center = (window.start + window.end) / 2, half = (window.end - window.start) * Number(button.dataset.zoom) / 2;
       manual({ start: center - half, end: center + half });

@@ -1,7 +1,7 @@
 import type { EChartsCoreOption } from 'echarts/core';
 
 export interface Observation { time: string; systolic: number; diastolic: number; heartRate: number; timeSource?: string; note?: string; }
-export interface SymptomDay { date: string; dizziness: string; headache: string; }
+export interface SymptomDay { date: string; dizziness: string; headache: string; note?: string; }
 export interface MedicationPhase { date: string; label: string; }
 export interface TimeWindow { start: number; end: number; }
 export const DAY = 86_400_000;
@@ -41,7 +41,7 @@ export function monthCells(month: string, symptoms: SymptomDay[]) {
     if (day < 1 || day > count) return null;
     const date = month + '-' + String(day).padStart(2, '0');
     const record = symptoms.find(item => item.date === date);
-    return { date, day, ...dayStatus(record), description: date + '，头痛：' + (record?.headache || '未记录') + '，头晕／头昏：' + (record?.dizziness || '未记录') };
+    return { date, day, ...dayStatus(record), description: date + '，头痛：' + (record?.headache || '未记录') + '，头晕／头昏：' + (record?.dizziness || '未记录') + (record?.note ? '，其他不适：' + record.note : '') };
   });
 }
 export function adjacentMonth(month: string, delta: number) {

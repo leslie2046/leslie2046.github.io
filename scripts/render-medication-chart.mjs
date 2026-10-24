@@ -152,7 +152,7 @@ for (const date of dates) {
   const complete = day.dizziness === '无' && day.headache === '无';
   const color = present ? '#cc3535' : complete ? '#24864b' : '#858585';
   const status = present ? '有症状' : complete ? '均无' : '未记录';
-  const detail = date+' 头痛：'+day.headache+'，头晕／头昏：'+day.dizziness;
+  const detail = date+' 头痛：'+day.headache+'，头晕／头昏：'+day.dizziness+(day.note ? '，其他不适：'+day.note : '');
   svg += `<g data-symptom-date="${date}" role="img" aria-label="${esc(detail)}"><title>${esc(detail)}</title>` + text(xx, yy+25, dateLabel(date), 15, ink, 'text-anchor="middle"');
   svg += `<circle cx="${xx-26}" cy="${yy+52}" r="9" fill="${color}"/>` + text(xx-10, yy+57, status, 13) + '</g>';
 }

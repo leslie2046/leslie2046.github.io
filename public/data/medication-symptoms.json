@@ -56,5 +56,11 @@
     "dizziness": "有",
     "headache": "有",
     "note": "心脏不舒服"
+  },
+  {
+    "date": "2026-10-25",
+    "dizziness": "无",
+    "headache": "无",
+    "note": "心脏疼痛有改善"
   }
 ]

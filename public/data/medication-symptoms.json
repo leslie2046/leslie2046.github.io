@@ -73,5 +73,11 @@
     "date": "2026-10-27",
     "dizziness": "无",
     "headache": "无"
+  },
+  {
+    "date": "2026-10-28",
+    "dizziness": "无",
+    "headache": "无",
+    "note": "无症状"
   }
 ]

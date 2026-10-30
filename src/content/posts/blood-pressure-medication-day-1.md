@@ -34,7 +34,7 @@ tags: [生活, 血压, 用药观察]
 
 <div class="health-chart-scroll" role="region" aria-label="血压、心率与症状图表，可横向滚动" tabindex="0">
 
-![血压、心率与每日症状累计图。最新记录：2026年10月30日06:30，血压105/77 mmHg，心率75次/分。](/images/health/medication-timeline.f3f898d27f34.svg)
+![血压、心率与每日症状累计图。最新记录：2026年10月30日23:20，血压111/80 mmHg，心率73次/分。](/images/health/medication-timeline.ec721a75fb0b.svg)
 
 </div>
 
